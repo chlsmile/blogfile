@@ -105,8 +105,8 @@ jar包名 | 作用|
 
 在使用slf4j桥接时要注意避免形成死循环，在项目依赖的jar包中不要存在以下情况。
 
-jar包形成死循环的条件 | 产生原因|
-:----------- | :-----------| 
+多个日志jar包形成死循环的条件| 产生原因|
+:-----------|:-----------| 
 **log4j-over-slf4j.jar和slf4j-log4j12.jar同时存在**|由于slf4j-log4j12.jar的存在会将所有日志调用委托给log4j。但由于同时由于log4j-over-slf4j.jar的存在，会将所有对log4j api的调用委托给相应等值的slf4j,所以log4j-over-slf4j.jar和slf4j-log4j12.jar同时存在会形成死循环|
 **jul-to-slf4j.jar和slf4j-jdk14.jar同时存在**|由于slf4j-jdk14.jar的存在会将所有日志调用委托给jdk的log。但由于同时jul-to-slf4j.jar的存在，会将所有对jul api的调用委托给相应等值的slf4j，所以jul-to-slf4j.jar和slf4j-jdk14.jar同时存在会形成死循环|
 
