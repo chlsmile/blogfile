@@ -11,6 +11,8 @@
   4.1 Secure class loader
   4.2 URL class loader
   ...
+###java ClassLoader的层次关系(注意是层次关系，不是继承关系)
+
 
 
 
