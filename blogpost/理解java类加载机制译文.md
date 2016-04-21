@@ -1,0 +1,1 @@
+原文地址:https://blogs.oracle.com/sundararajan/entry/understanding_java_class_loading
