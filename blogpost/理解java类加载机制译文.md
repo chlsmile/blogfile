@@ -120,10 +120,23 @@ Then application class loader check the .class bytes in application CLASSPATH. I
 于是应用类加载器检查在应用的CLASSPATH下的.class字节.如果找到了则进行加载.如果没有找到,将会抛出NoClassDefFoundError异常.
 
 Summary
+总结:
 
 Class is uniquely identified by defining loader and fully qualified name.
+Class是由具体的类加载器与类的完全限定类名唯一定义的.
+
 Classes are different even if loaded from identical .class bytes from the same location in file system, if the defining loaders are different.
+如果具体的类加载器不同,即使.class字符是从文件系统中的相同位置进行加载的Classes也是不同的.
+
 Class loaders delegate loading to parent loaders.
+类加载器委托给父加载器进行加载.
+
 To load class "Foo" referrred from "Bar" class, JVM uses Bar's defining loader as initiating loader. JVM will call loadClass("Foo") on the defining loader of Bar.
-JVM caches -> runtime class record for each time it initiates a load. JVM will use cache for subsequent resolution. i.e, loadClass won't be called for every reference. This ensures time invariance - i.e., a ClassLoader that loads different .class bytes for the same class name won't be allowed. It is taken care by cache. Well written class loaders have to check cache by ClassLoader.findLoadedClass() call.
-Stay tuned for more discussion on loader constraints and LinkageErrors..
+加载Bar类中引用的Foo类,JVM使用Bar类的确切的类加载器做为初始化加载器.JVM会在Bar类的确切加载器上会调用loadClass()方法加载Foo类.
+
+JVM caches -> runtime class record for each time it initiates a load. JVM will use cache for subsequent resolution. i.e, loadClass won't be called for every reference.
+This ensures time invariance - i.e., a ClassLoader that loads different .class bytes for the same class name won't be allowed.
+It is taken care by cache. Well written class loaders have to check cache by ClassLoader.findLoadedClass() call.
+JVM缓存->运行时的类每次初始化加载都将被记录.JVM将会缓存用于以后的解析.即,loadClass()方法不会对于每一次引用都调用.
+这能确保时间的不变性-即,一个类加载器不允许加载相同类名但字节码不同的类.
+他是由缓存来实现的.好的类加载器应该通过调用ClassLoader得call()方法来检查缓存.
