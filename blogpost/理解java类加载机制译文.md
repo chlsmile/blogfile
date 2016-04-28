@@ -1,4 +1,3 @@
-原文地址:https://blogs.oracle.com/sundararajan/entry/
 # 理解Java类加载机制(译文)
 
 ## 理解java类加载机制
@@ -44,7 +43,7 @@
 	* 这个加载器加载你应用的"main"(由main方法的类)。在Sun的实现中,它是sun.misc.Launcher$AppClassLoader的一个实例(事实上它是sun.misc.Launcher类的一个内部类)。
 	* 默认的应用加载器用扩展加载器做为它的父加载器。
 	* 你可以使用-Djava.system.class.loader命令更改应用的类加载器。这个值指定java.lang.ClassLoader的子类的名字.首先默认应用加载器加载已命名的类(这个类在CLASSPATH或者-cp)和创建一个它的实例.新创建的这个类的实例用于加载应用的main类。
-	
+
 
 ## 一个类典型的类记载流程
 
@@ -85,3 +84,4 @@ sun.misc.Launcher$AppClassLoader@17943a4
 
 ## 原文链接
 Understanding Java class loading <https://blogs.oracle.com/sundararajan/entry/understanding_java_class_loading>
+
