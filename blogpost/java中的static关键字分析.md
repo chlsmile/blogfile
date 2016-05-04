@@ -23,7 +23,25 @@ public class Car{
     private String wheel;
     private static int numberOfCars;
 }
-类变量'通过类.变量名'方式引用,Car.numberOfCars,这能够清楚的表明numberOfCars变量是一个类变量()
+类变量'通过类.变量名'方式引用,Car.numberOfCars,这能够清楚的表明numberOfCars变量是一个类变量
+可以使用一个构造方法来设置id实例变量,并增加实例变量numberOfCars
+public class Car{
+    private int  id;
+    private String engine;
+    private String wheel;
+    private static int numberOfCars;
+
+    public Car(String engine, String wheel){
+        this.engine=engine;
+        this.wheel=wheel;
+        id=++numberOfCars
+    }
+
+    public int getId(){
+        return id;
+    }
+}
+
 
 
 
