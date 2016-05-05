@@ -43,6 +43,10 @@ public class Car{
 }
 
 
+static关键字内存简单分析
+
+
+
 
 
 
