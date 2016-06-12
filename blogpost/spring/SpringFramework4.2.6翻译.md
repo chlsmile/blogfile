@@ -1,4 +1,5 @@
 ##Part I. Spring Framework概述
+http://docs.spring.io/spring/docs/4.2.6.RELEASE/spring-framework-reference/htmlsingle/#overview-getting-started-with-spring
 
 Spring Framework是一个轻量级的解决方案,在构建一站式企业级应用上有很大的潜能。然而,Spring是模块化的,允许你只用你需要的模块,而不需要引用其余部分。你可以使用IoC容器,可以选择它支持的任何web框架,你也可以仅仅整合Hibernate或者JDBC抽象层使用。
 Spring Framework支持声明式的事务管理,通过RMI或者web services进行远程访问业务逻辑,并且提供多种数据持久化解决方案。它提供一个全功能的MVC框架,允许你透明的整合AOP到你的软件中。
@@ -22,7 +23,7 @@ Spring允许你从"普通Java对象(POJO)"来构建应用程序,并且将应用�
 * 让一个本地Java方法来执行管理操作而不需要处理JMX的api;
 * 让一个本地Java方法处理消息而不需要处理JMS的api。
 
-2.1 依赖注入与控制反转
+####2.1 依赖注入与控制反转
 A Java application — a loose term that runs the gamut from constrained, embedded applications to n-tier, server-side enterprise applications — typically consists of objects that collaborate to form the application proper. Thus the objects in an application have dependencies on each other.
 Java应用程序--一个宽松的术语
 
@@ -30,6 +31,13 @@ Java应用程序--一个宽松的术语
 
 Spring Framework的控制反转(IoC)组件提供组合不同的组件到完整可用的应用程序的形式化方法来强调这个问题。Spring Framework编写了形式化的设计模式作为顶级对象,你可用用来整合到你的应用程序中。很多组织和研究机构使用Spring Framework的这个方式来设计健壮的,可维护的应用程序。
 
-> **背景** "问题是, what aspect of control are [they] inverting?" Martin Fowler posed this question about Inversion of Control (IoC) on his site in 2004. Fowler suggested renaming the principle to make it more self-explanatory and came up with Dependency Injection.
+> **背景** "问题是, 反向控制哪一方面?" 在2004年, Martin Fowler 在他的个人网站上提出了这个关系控制反转(IoC)问题. Fowler 建议重新命名控制反转, 使得它更清晰的解释说明,同时提出了依赖注入的概念。
+
+#### 2.2 模块
+The Spring Framework consists of features organized into about 20 modules.
+These modules are grouped into Core Container, Data Access/Integration, Web, AOP (Aspect Oriented Programming), Instrumentation, Messaging, and Test, as shown in the following diagram.
+Spring Framework由大约20个功能模块构成。这些模块包含Core Container, Data Access/Integration,  Web, AOP(Aspect Oriented Programming),Instrumentation, Messaging, 和Test,参见下图
+
+http://docs.spring.io/spring/docs/4.2.6.RELEASE/spring-framework-reference/htmlsingle/images/spring-overview.png
 
 
