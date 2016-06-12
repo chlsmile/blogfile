@@ -37,7 +37,6 @@ Spring Framework的控制反转(IoC)组件提供组合不同的组件到完整�
 The Spring Framework consists of features organized into about 20 modules.
 These modules are grouped into Core Container, Data Access/Integration, Web, AOP (Aspect Oriented Programming), Instrumentation, Messaging, and Test, as shown in the following diagram.
 Spring Framework由大约20个功能模块构成。这些模块包含Core Container, Data Access/Integration,  Web, AOP(Aspect Oriented Programming),Instrumentation, Messaging, 和Test,参见下图
-
-http://docs.spring.io/spring/docs/4.2.6.RELEASE/spring-framework-reference/htmlsingle/images/spring-overview.png
+![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/spring-overview.png)
 
 
