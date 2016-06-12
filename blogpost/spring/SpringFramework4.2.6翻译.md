@@ -34,8 +34,6 @@ Spring Framework的控制反转(IoC)组件提供组合不同的组件到完整�
 > **背景** "问题是, 反向控制哪一方面?" 在2004年, Martin Fowler 在他的个人网站上提出了这个关系控制反转(IoC)问题. Fowler 建议重新命名控制反转, 使得它更清晰的解释说明,同时提出了依赖注入的概念。
 
 #### 2.2 模块
-The Spring Framework consists of features organized into about 20 modules.
-These modules are grouped into Core Container, Data Access/Integration, Web, AOP (Aspect Oriented Programming), Instrumentation, Messaging, and Test, as shown in the following diagram.
 Spring Framework由大约20个功能模块构成。这些模块包含Core Container, Data Access/Integration,  Web, AOP(Aspect Oriented Programming),Instrumentation, Messaging, 和Test,参见下图
 ![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/spring-overview.png)
 
