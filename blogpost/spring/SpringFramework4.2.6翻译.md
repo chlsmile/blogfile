@@ -37,4 +37,28 @@ Spring Framework的控制反转(IoC)组件提供组合不同的组件到完整�
 Spring Framework由大约20个功能模块构成。这些模块包含Core Container, Data Access/Integration,  Web, AOP(Aspect Oriented Programming),Instrumentation, Messaging, 和Test,参见下图
 ![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/spring-overview.png)
 
+The following sections list the available modules for each feature along with their artifact names and the topics they cover.
+Artifact names correlate to artifact IDs used in Dependency Management tools.
+
+##### 2.2.1 核心容器
+核心容器包含spring-core,spring-beans,spring-context,spring-context-support,和spring-expression(Spring Expression Language)模块。
+
+spring-core和spring-beans模块提供Spring框架的基础功能,包含控制反转和依赖注入特性。BeanFactory是一个复杂的工厂实现模式。It removes the need for programmatic singletons and allows you to decouple the configuration and specification of dependencies from your actual program logic.
+
+The Context (spring-context) module builds on the solid base provided by the Core and Beans modules: it is a means to access objects in a framework-style manner that is similar to a JNDI registry.
+The Context module inherits its features from the Beans module and adds support for internationalization (using, for example, resource bundles), event propagation, resource loading, and the transparent creation of contexts by,
+for example, a Servlet container. The Context module also supports Java EE features such as EJB, JMX, and basic remoting.
+The ApplicationContext interface is the focal point of the Context module.
+spring-context-support provides support for integrating common third-party libraries into a Spring application context for caching (EhCache, Guava, JCache), mailing (JavaMail), scheduling (CommonJ, Quartz) and template engines (FreeMarker, JasperReports, Velocity).
+
+
+The spring-expression module provides a powerful Expression Language for querying and manipulating an object graph at runtime.
+It is an extension of the unified expression language (unified EL) as specified in the JSP 2.1 specification.
+The language supports setting and getting property values, property assignment, method invocation, accessing the content of arrays, collections and indexers, logical and arithmetic operators, named variables, and retrieval of objects by name from Spring’s IoC container.
+It also supports list projection and selection as well as common list aggregations.
+
+
+
+
+
 
