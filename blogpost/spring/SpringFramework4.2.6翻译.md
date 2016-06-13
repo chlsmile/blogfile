@@ -112,11 +112,18 @@ Spring的声明式事务管理特性使得Web应用程序可以全部事务化�
 图2.5. EJBs - 包装已经存在的POJOs
 ![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-ejb.png)
 
-The Spring Framework also provides an access and abstraction layer for Enterprise JavaBeans, enabling you to reuse your existing POJOs and wrap them in stateless session beans for use in scalable, fail-safe web applications that might need declarative security.
+Spring Framework也提供了对企业级Java Bean的访问和抽象层,可扩展包装它们到无状态会话bean,不安全的Web应用可能需要声明式安全。
 
-2.3.1 Dependency Management and Naming Conventions
+##### 2.3.1 依赖管理与命名约定
+Dependency management and dependency injection are different things.
+To get those nice features of Spring into your application (like dependency injection) you need to assemble all the libraries needed (jar files) and get them onto your classpath at runtime, and possibly at compile time.
+These dependencies are not virtual components that are injected, but physical resources in a file system (typically).
+The process of dependency management involves locating those resources, storing them and adding them to classpaths.
+Dependencies can be direct (e.g. my application depends on Spring at runtime), or indirect (e.g. my application depends on commons-dbcp which depends on commons-pool).
+The indirect dependencies are also known as "transitive" and it is those dependencies that are hardest to identify and manage.
+依赖管理与依赖注入是两件不同的事情。要在应用程序中添加Spring的特性(例如依赖注入),你需要组合所需的类库(jar文件)并添加到在运行时环境的类路径中,而编译时也是需要的。这些依赖不是注入的虚拟组件,而是文件系统(通常是这样)的物理资源。依赖管理的过程包括定位那些资源，存储它们并将它们添加到类路径中。依赖可以是直接的(例如,我的应用在允许期间时依赖Spring),或者间接的(例如,我的应用依赖于commons-dbcp,而commons-dbcp依赖于commons-pool)。间接的依赖也被认为是“过度的”,而且那些依赖本身就难以识别和管理的。
 
-Dependency management and dependency injection are different things. To get those nice features of Spring into your application (like dependency injection) you need to assemble all the libraries needed (jar files) and get them onto your classpath at runtime, and possibly at compile time. These dependencies are not virtual components that are injected, but physical resources in a file system (typically). The process of dependency management involves locating those resources, storing them and adding them to classpaths. Dependencies can be direct (e.g. my application depends on Spring at runtime), or indirect (e.g. my application depends on commons-dbcp which depends on commons-pool). The indirect dependencies are also known as "transitive" and it is those dependencies that are hardest to identify and manage.
+
 
 If you are going to use Spring you need to get a copy of the jar libraries that comprise the pieces of Spring that you need. To make this easier Spring is packaged as a set of modules that separate the dependencies as much as possible, so for example if you don’t want to write a web application you don’t need the spring-web modules. To refer to Spring library modules in this guide we use a shorthand naming convention spring-* or spring-*.jar, where * represents the short name for the module (e.g. spring-core, spring-webmvc, spring-jms, etc.). The actual jar file name that you use is normally the module name concatenated with the version number (e.g. spring-core-4.2.6.RELEASE.jar).
 
