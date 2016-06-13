@@ -126,6 +126,7 @@ So the first thing you need to decide is how to manage your dependencies: we gen
 
 You will find bellow the list of Spring artifacts. For a more complete description of each modules, see Section 2.2, “Modules”.
 Table 2.1. Spring Framework Artifacts
+
 GroupId | ArtifactId | Description
 ------------ | ------------- | ------------
 org.springframework | spring-aop  | Proxy-based AOP support
