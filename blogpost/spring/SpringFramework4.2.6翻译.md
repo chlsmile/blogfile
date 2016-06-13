@@ -90,3 +90,78 @@ spring-webmvc-portlet模块(也被称作Web-Portlet模块)提供Portlet环境与
 #####2.2.6 测试
 spring-test模块支持单元测试并且集成了Spring JUnit和TestNG测试组件。它提供了与Spring ApplicationContexts和caching上下文一致的加载。它还提供了可用于隔离对代码进行测试的模拟对象。
 
+
+#### 2.3 使用场景
+The building blocks described previously make Spring a logical choice in many scenarios, from embedded applications that run on resource-constrained devices to full-fledged enterprise applications that use Spring’s transaction management functionality and web framework integration.
+
+
+Figure 2.2. Typical full-fledged Spring web application
+![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-full.png)
+
+
+Sometimes circumstances do not allow you to completely switch to a different framework. The Spring Framework does not force you to use everything within it; it is not an all-or-nothing solution. Existing front-ends built with Struts, Tapestry, JSF or other UI frameworks can be integrated with a Spring-based middle-tier, which allows you to use Spring transaction features. You simply need to wire up your business logic using an ApplicationContext and use a WebApplicationContext to integrate your web layer.
+
+Figure 2.4. Remoting usage scenario
+![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-remoting.png)
+
+When you need to access existing code through web services, you can use Spring’s Hessian-, Burlap-, Rmi- or JaxRpcProxyFactory classes. Enabling remote access to existing applications is not difficult.
+
+Figure 2.5. EJBs - Wrapping existing POJOs
+![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-ejb.png)
+
+The Spring Framework also provides an access and abstraction layer for Enterprise JavaBeans, enabling you to reuse your existing POJOs and wrap them in stateless session beans for use in scalable, fail-safe web applications that might need declarative security.
+
+2.3.1 Dependency Management and Naming Conventions
+
+Dependency management and dependency injection are different things. To get those nice features of Spring into your application (like dependency injection) you need to assemble all the libraries needed (jar files) and get them onto your classpath at runtime, and possibly at compile time. These dependencies are not virtual components that are injected, but physical resources in a file system (typically). The process of dependency management involves locating those resources, storing them and adding them to classpaths. Dependencies can be direct (e.g. my application depends on Spring at runtime), or indirect (e.g. my application depends on commons-dbcp which depends on commons-pool). The indirect dependencies are also known as "transitive" and it is those dependencies that are hardest to identify and manage.
+
+If you are going to use Spring you need to get a copy of the jar libraries that comprise the pieces of Spring that you need. To make this easier Spring is packaged as a set of modules that separate the dependencies as much as possible, so for example if you don’t want to write a web application you don’t need the spring-web modules. To refer to Spring library modules in this guide we use a shorthand naming convention spring-* or spring-*.jar, where * represents the short name for the module (e.g. spring-core, spring-webmvc, spring-jms, etc.). The actual jar file name that you use is normally the module name concatenated with the version number (e.g. spring-core-4.2.6.RELEASE.jar).
+
+
+Each release of the Spring Framework will publish artifacts to the following places:
+
+Maven Central, which is the default repository that Maven queries, and does not require any special configuration to use. Many of the common libraries that Spring depends on also are available from Maven Central and a large section of the Spring community uses Maven for dependency management, so this is convenient for them. The names of the jars here are in the form spring-*-<version>.jar and the Maven groupId is org.springframework.
+In a public Maven repository hosted specifically for Spring. In addition to the final GA releases, this repository also hosts development snapshots and milestones. The jar file names are in the same form as Maven Central, so this is a useful place to get development versions of Spring to use with other libraries deployed in Maven Central. This repository also contains a bundle distribution zip file that contains all Spring jars bundled together for easy download.
+So the first thing you need to decide is how to manage your dependencies: we generally recommend the use of an automated system like Maven, Gradle or Ivy, but you can also do it manually by downloading all the jars yourself.
+
+You will find bellow the list of Spring artifacts. For a more complete description of each modules, see Section 2.2, “Modules”.
+Table 2.1. Spring Framework Artifacts
+GroupId | ArtifactId | Description
+------------ | ------------- | ------------
+org.springframework | spring-aop  | Proxy-based AOP support
+org.springframework | spring-aspects  | AspectJ based aspects
+org.springframework | spring-beans | Beans support, including Groovy
+org.springframework | spring-context | Application context runtime, including scheduling and remoting abstractions
+org.springframework | spring-context-support  | Support classes for integrating common third-party libraries into a Spring application context
+org.springframework | spring-core  | Core utilities, used by many other Spring modules
+org.springframework | spring-expression  | Spring Expression Language (SpEL)
+org.springframework | spring-instrument  | Instrumentation agent for JVM bootstrapping
+org.springframework | spring-instrument-tomcat  | Instrumentation agent for Tomcat
+org.springframework | spring-jdbc | JDBC support package, including DataSource setup and JDBC access support
+org.springframework | spring-jms| JMS support package, including helper classes to send and receive JMS messages
+org.springframework | spring-messaging  | Support for messaging architectures and protocols
+org.springframework | spring-orm  | Object/Relational Mapping, including JPA and Hibernate support
+org.springframework | spring-oxm  | Object/XML Mapping
+org.springframework | spring-test  | Support for unit testing and integration testing Spring components
+org.springframework | spring-tx  | Transaction infrastructure, including DAO support and JCA integration
+org.springframework | spring-web  | Web support packages, including client and web remoting
+org.springframework | spring-webmvc  | REST Web Services and model-view-controller implementation for web applications
+org.springframework | spring-webmvc-portlet  | MVC implementation to be used in a Portlet environment
+org.springframework | spring-websocket  | WebSocket and SockJS implementations, including STOMP support
+
+Spring Dependencies and Depending on Spring
+
+Although Spring provides integration and support for a huge range of enterprise and other external tools, it intentionally keeps its mandatory dependencies to an absolute minimum: you shouldn’t have to locate and download (even automatically) a large number of jar libraries in order to use Spring for simple use cases. For basic dependency injection there is only one mandatory external dependency, and that is for logging (see below for a more detailed description of logging options).
+
+Next we outline the basic steps needed to configure an application that depends on Spring, first with Maven and then with Gradle and finally using Ivy. In all cases, if anything is unclear, refer to the documentation of your dependency management system, or look at some sample code - Spring itself uses Gradle to manage dependencies when it is building, and our samples mostly use Gradle or Maven.
+
+Maven Dependency Management
+
+If you are using Maven for dependency management you don’t even need to supply the logging dependency explicitly. For example, to create an application context and use dependency injection to configure an application, your Maven dependencies will look like this:
+
+
+
+
+
+
+
