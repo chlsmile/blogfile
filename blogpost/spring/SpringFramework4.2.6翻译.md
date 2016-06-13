@@ -92,22 +92,25 @@ spring-test模块支持单元测试并且集成了Spring JUnit和TestNG测试组
 
 
 #### 2.3 使用场景
-The building blocks described previously make Spring a logical choice in many scenarios, from embedded applications that run on resource-constrained devices to full-fledged enterprise applications that use Spring’s transaction management functionality and web framework integration.
+前面描述的构建模块使得Spring可以在很多场景中作为业务逻辑实现的选择,from embedded applications that run on resource-constrained devices to full-fledged enterprise applications that use Spring’s transaction management functionality and web framework integration.
+
+图2.2. 典型的功能完善的Spring web应用
+![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-full.png)
+Spring的声明式事务管理特性使得Web应用程序可以全部事务化，就好像使用了EJB容器管理的事务。你所有的自定义业务逻辑可以通过简单的POJO来实现，并通过Spring的IoC容器管理。额外的服务支持包括发送邮件,验证对Web层独立，这可以让你选择在哪里执行验证规则。Spring的ORM支持包括对JPA,Hibernate和JDO的支持;例如,在使用Hibernate时,你可以继续使用现在正在使用的mapping文件和标准的Hibernate SessionFactory配置。表单控制器无缝地整合了Web层和领域模型，移除了ActionForm或其它为领域模型转换HTTP参数的类需要。
+
+图2.3. 通过使用Spring中间层来集成第三方web框架
+![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-thirdparty-web.png)
+
+有些情况不允许你完全切换成另外一种框架。Spring框架不强迫你式使用它的全部api,它不是一个全有或者全无的解决方案。现有的一些使用了Struts,Tapestry,JSF或者其它的UI框架可以使用Spring基础中间件进行集成,从而允许你可以使用Spring事务管理特性。使用ApplicationContext和WebApplicationContext集成到你的web层,从而你只需要关注你的业务逻辑。
 
 
-Figure 2.2. Typical full-fledged Spring web application
-![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-full.png)
+图2.4. 远程调用使用场景
+![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-remoting.png)
 
+当你需要通过web服务来访问已有的code,你可以使用Spring的Hessian,Burlap,Rmi或者JaxRpcProxyFactory类。从而使得在应用里进行远程访问不再困难。
 
-Sometimes circumstances do not allow you to completely switch to a different framework. The Spring Framework does not force you to use everything within it; it is not an all-or-nothing solution. Existing front-ends built with Struts, Tapestry, JSF or other UI frameworks can be integrated with a Spring-based middle-tier, which allows you to use Spring transaction features. You simply need to wire up your business logic using an ApplicationContext and use a WebApplicationContext to integrate your web layer.
-
-Figure 2.4. Remoting usage scenario
-![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-remoting.png)
-
-When you need to access existing code through web services, you can use Spring’s Hessian-, Burlap-, Rmi- or JaxRpcProxyFactory classes. Enabling remote access to existing applications is not difficult.
-
-Figure 2.5. EJBs - Wrapping existing POJOs
-![pic2](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-ejb.png)
+图2.5. EJBs - 包装已经存在的POJOs
+![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/overview-ejb.png)
 
 The Spring Framework also provides an access and abstraction layer for Enterprise JavaBeans, enabling you to reuse your existing POJOs and wrap them in stateless session beans for use in scalable, fail-safe web applications that might need declarative security.
 
