@@ -115,24 +115,28 @@ Spring的声明式事务管理特性使得Web应用程序可以全部事务化�
 Spring Framework也提供了对企业级Java Bean的访问和抽象层,可扩展包装它们到无状态会话bean,不安全的Web应用可能需要声明式安全。
 
 ##### 2.3.1 依赖管理与命名约定
-Dependency management and dependency injection are different things.
-To get those nice features of Spring into your application (like dependency injection) you need to assemble all the libraries needed (jar files) and get them onto your classpath at runtime, and possibly at compile time.
-These dependencies are not virtual components that are injected, but physical resources in a file system (typically).
-The process of dependency management involves locating those resources, storing them and adding them to classpaths.
-Dependencies can be direct (e.g. my application depends on Spring at runtime), or indirect (e.g. my application depends on commons-dbcp which depends on commons-pool).
-The indirect dependencies are also known as "transitive" and it is those dependencies that are hardest to identify and manage.
-依赖管理与依赖注入是两件不同的事情。要在应用程序中添加Spring的特性(例如依赖注入),你需要组合所需的类库(jar文件)并添加到在运行时环境的类路径中,而编译时也是需要的。这些依赖不是注入的虚拟组件,而是文件系统(通常是这样)的物理资源。依赖管理的过程包括定位那些资源，存储它们并将它们添加到类路径中。依赖可以是直接的(例如,我的应用在允许期间时依赖Spring),或者间接的(例如,我的应用依赖于commons-dbcp,而commons-dbcp依赖于commons-pool)。间接的依赖也被认为是“过度的”,而且那些依赖本身就难以识别和管理的。
+依赖管理与依赖注入是两个概念。要在应用程序中添加Spring的特性(例如依赖注入),你需要组合所需的类库(jar文件)并添加到在运行时环境的类路径中,而编译时也是需要的。这些依赖不是注入的虚拟组件,而是文件系统(通常是这样)的物理资源。依赖管理的过程包括定位那些资源，存储它们并将它们添加到类路径中。依赖可以是直接的(例如,我的应用在允许期间时依赖Spring),或者间接的(例如,我的应用依赖于commons-dbcp,而commons-dbcp依赖于commons-pool)。间接的依赖也被认为是“过度的”,而且那些依赖本身就难以识别和管理的。
 
+如果你决定使用Spring你需要拷贝你需要的相应的Spring jar包。为了方便使用,Spring尽可能的按照模块的方式进行了打包,所以例如,如果你不需要开发一个web应用你就不需要使用spring-web模块jar包。为了参考Spring的类库模块在这份文档里用了一个简单方便的命名方式spring-*或者spring-*.jar，这里的“*”代表了模块的简短名称(比如,spring-core,spring-webmvc,spring-jms等)。真实的jar文件命名通常是带有版本号的(例如spring-core-4.2.6.RELEASE.jar)。
 
-
-If you are going to use Spring you need to get a copy of the jar libraries that comprise the pieces of Spring that you need. To make this easier Spring is packaged as a set of modules that separate the dependencies as much as possible, so for example if you don’t want to write a web application you don’t need the spring-web modules. To refer to Spring library modules in this guide we use a shorthand naming convention spring-* or spring-*.jar, where * represents the short name for the module (e.g. spring-core, spring-webmvc, spring-jms, etc.). The actual jar file name that you use is normally the module name concatenated with the version number (e.g. spring-core-4.2.6.RELEASE.jar).
 
 
 Each release of the Spring Framework will publish artifacts to the following places:
+每个Spring Framework release版本通常发布在下面这些地方:
 
-Maven Central, which is the default repository that Maven queries, and does not require any special configuration to use. Many of the common libraries that Spring depends on also are available from Maven Central and a large section of the Spring community uses Maven for dependency management, so this is convenient for them. The names of the jars here are in the form spring-*-<version>.jar and the Maven groupId is org.springframework.
-In a public Maven repository hosted specifically for Spring. In addition to the final GA releases, this repository also hosts development snapshots and milestones. The jar file names are in the same form as Maven Central, so this is a useful place to get development versions of Spring to use with other libraries deployed in Maven Central. This repository also contains a bundle distribution zip file that contains all Spring jars bundled together for easy download.
-So the first thing you need to decide is how to manage your dependencies: we generally recommend the use of an automated system like Maven, Gradle or Ivy, but you can also do it manually by downloading all the jars yourself.
+
+
+Maven Central(maven中央仓库),Maven仓库默认的地址,不需要进行特殊的配置,直接就可以获取。
+许多Spring依赖的常用类库在Maven Central中也可以获取到,同时Spring社区大多数用户使用Maven作为依赖管理工具，这对于他们来说是很方便的。
+这里jar包的命名是spring-*-<version>.jar格式的，并且Maven的groupId是org.springframework。
+In a public Maven repository hosted specifically for Spring.
+In addition to the final GA releases, this repository also hosts development snapshots and milestones.
+The jar file names are in the same form as Maven Central, so this is a useful place to get development versions of Spring to use with other libraries deployed in Maven Central.
+This repository also contains a bundle distribution zip file that contains all Spring jars bundled together for easy download.
+所以首先你需要决定你如果管理你的依赖:我们通常建议你使用自动化的系统类似于Maven, Gradle或者Ivy,当然你也可以自己手动下载你需要的Spring jar包。
+
+
+
 
 You will find bellow the list of Spring artifacts. For a more complete description of each modules, see Section 2.2, “Modules”.
 Table 2.1. Spring Framework Artifacts
