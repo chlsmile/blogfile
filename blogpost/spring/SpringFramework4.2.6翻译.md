@@ -310,23 +310,27 @@ Distribution zips are published to the Spring Maven Repository (this is just for
 
 To download a distribution zip open a web browser to http://repo.spring.io/release/org/springframework/spring and select the appropriate subfolder for the version that you want. Distribution files end -dist.zip, for example spring-framework-{spring-version}-RELEASE-dist.zip. Distributions are also published for milestones and snapshots.
 
-2.3.2 Logging
+2.3.2 日志
 
-Logging is a very important dependency for Spring because a) it is the only mandatory external dependency, b) everyone likes to see some output from the tools they are using, and c) Spring integrates with lots of other tools all of which have also made a choice of logging dependency. One of the goals of an application developer is often to have unified logging configured in a central place for the whole application, including all external components. This is more difficult than it might have been since there are so many choices of logging framework.
+日志对于Spring来说是非常重要的,有如下几个原因:
+a)它是唯一的强制性的外部依赖;
+b)每个人都希望看到他使用的工具有一些他想要的输出信息;
+c)Spring整合了多种组件,这些组件都会选择一种日志依赖。应用程序开发人员的目标之一就是在核心位置对整个应用程序有一个统一的日志配置，包含对全部的外部组件。因为日志框架的种类有很多,所以变得有些难以选择。
 
-The mandatory logging dependency in Spring is the Jakarta Commons Logging API (JCL). We compile against JCL and we also make JCL Log objects visible for classes that extend the Spring Framework. It’s important to users that all versions of Spring use the same logging library: migration is easy because backwards compatibility is preserved even with applications that extend Spring. The way we do this is to make one of the modules in Spring depend explicitly on commons-logging (the canonical implementation of JCL), and then make all the other modules depend on that at compile time. If you are using Maven for example, and wondering where you picked up the dependency on commons-logging, then it is from Spring and specifically from the central module called spring-core.
+Spring默认的日志依赖是Jakarta Commons Logging API (JCL). 我们的编译是基于JCL的, 并且我们使扩展Spring Framework的类对JCL的Log对象都是可见的。所有Spring的版本都使用相同的日志包是很重要的:因为向后兼容特性的保留,迁移是很容易的,扩展Spring的应用程序也是这样。我们这样做就使Spring中的模块明确地基于commons-logging(JCL的典型实现),在编译时也使得其它模块都基于它。如果你在使用Maven,并想知道在哪儿获取到的commons-logging依赖,那就是从Spring的spring-core模块中获取的。
 
-The nice thing about commons-logging is that you don’t need anything else to make your application work. It has a runtime discovery algorithm that looks for other logging frameworks in well known places on the classpath and uses one that it thinks is appropriate (or you can tell it which one if you need to). If nothing else is available you get pretty nice looking logs just from the JDK (java.util.logging or JUL for short). You should find that your Spring application works and logs happily to the console out of the box in most situations, and that’s important.
+关于commons-logging比较好的是你不需要做其它的操作就可以使应用程序工作。它有一个运行时的查找算法,在我们都知道的类路径下寻找其它日志框架,并且使用它认为是比较合适的(或者告诉它你需要使用的是哪一个)一个。如果没有可用的,那么你会得到一个来自JDK(java.util.logging或者简称为JUL)看起来还不错的日志。你应该发现Spring应用程序在运行时会有日志打印到控制台上,这是很重要的。
 
-Not Using Commons Logging
+不要使用Commons Logging
 
-Unfortunately, the runtime discovery algorithm in commons-logging, while convenient for the end-user, is problematic. If we could turn back the clock and start Spring now as a new project it would use a different logging dependency. The first choice would probably be the Simple Logging Facade for Java ( SLF4J), which is also used by a lot of other tools that people use with Spring inside their applications.
+不幸的是,在commons-logging中为了方便用户在运行时发现的算法是有问题的。如果我们可以让时光倒流,重新开发Spring框架,我们将换一个不同的日志依赖。我们首选可能会是Simple Logging Facade for Java (SLF4J)日志框架,它也被Spring的开发人员在它们的应用程序中很多其它的工具所使用。
 
-There are basically two ways to switch off commons-logging:
+有两种基本的方式来替换commons-logging:
 
-Exclude the dependency from the spring-core module (as it is the only module that explicitly depends on commons-logging)
-Depend on a special commons-logging dependency that replaces the library with an empty jar (more details can be found in the SLF4J FAQ)
-To exclude commons-logging, add the following to your dependencyManagement section:
+a)对spring-core模块中进行排除依赖(spring-core模块是唯一对commons-logging进行依赖的);
+b)依赖一个特殊的commons-logging依赖,使用空jar包来替代(更多信息可以参考SLF4J FAQ)
+排除commons-logging依赖,添加如下的依赖排除配置
+
 
 ```java
 <dependencies>
@@ -344,15 +348,25 @@ To exclude commons-logging, add the following to your dependencyManagement secti
 </dependencies>
 ```
 
-Now this application is probably broken because there is no implementation of the JCL API on the classpath, so to fix it a new one has to be provided. In the next section we show you how to provide an alternative implementation of JCL using SLF4J as an example.
+现在可能因为在classpath下没有JCL API的实现,导致应用不能正常运行,要想解决这个问题需要提供一个新的日志实现。
 
-Using SLF4J
 
-SLF4J is a cleaner dependency and more efficient at runtime than commons-logging because it uses compile-time bindings instead of runtime discovery of the other logging frameworks it integrates. This also means that you have to be more explicit about what you want to happen at runtime, and declare it or configure it accordingly. SLF4J provides bindings to many common logging frameworks, so you can usually choose one that you already use, and bind to that for configuration and management.
+使用SLF4J
 
-SLF4J provides bindings to many common logging frameworks, including JCL, and it also does the reverse: bridges between other logging frameworks and itself. So to use SLF4J with Spring you need to replace the commons-logging dependency with the SLF4J-JCL bridge. Once you have done that then logging calls from within Spring will be translated into logging calls to the SLF4J API, so if other libraries in your application use that API, then you have a single place to configure and manage logging.
+SLF4J is a cleaner dependency and more efficient at runtime than commons-logging because it uses compile-time bindings instead of runtime discovery of the other logging frameworks it integrates.
+This also means that you have to be more explicit about what you want to happen at runtime, and declare it or configure it accordingly.
+SLF4J provides bindings to many common logging frameworks, so you can usually choose one that you already use, and bind to that for configuration and management.
+SLF4J是一个简洁的依赖并且在运行时比commons-logging更有效, 因为他使用了编译期绑定来替代其它日志组件运行期动态查找机制。
 
-A common choice might be to bridge Spring to SLF4J, and then provide explicit binding from SLF4J to Log4J. You need to supply 4 dependencies (and exclude the existing commons-logging): the bridge, the SLF4J API, the binding to Log4J, and the Log4J implementation itself. In Maven you would do that like this
+
+
+SLF4J provides bindings to many common logging frameworks, including JCL, and it also does the reverse: bridges between other logging frameworks and itself.
+So to use SLF4J with Spring you need to replace the commons-logging dependency with the SLF4J-JCL bridge.
+Once you have done that then logging calls from within Spring will be translated into logging calls to the SLF4J API, so if other libraries in your application use that API, then you have a single place to configure and manage logging.
+
+A common choice might be to bridge Spring to SLF4J, and then provide explicit binding from SLF4J to Log4J.
+You need to supply 4 dependencies (and exclude the existing commons-logging): the bridge, the SLF4J API, the binding to Log4J, and the Log4J implementation itself.
+In Maven you would do that like this
 
 ```java
 <dependencies>
