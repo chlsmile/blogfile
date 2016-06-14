@@ -139,7 +139,8 @@ This repository also contains a bundle distribution zip file that contains all S
 
 
 You will find bellow the list of Spring artifacts. For a more complete description of each modules, see Section 2.2, “Modules”.
-Table 2.1. Spring Framework Artifacts
+在下面的列表重你将会看到
+表格 2.1. Spring Framework Artifacts
 
 GroupId | ArtifactId | Description
 ------------ | ------------- | ------------
@@ -164,15 +165,284 @@ org.springframework | spring-webmvc  | REST Web Services and model-view-controll
 org.springframework | spring-webmvc-portlet  | MVC implementation to be used in a Portlet environment
 org.springframework | spring-websocket  | WebSocket and SockJS implementations, including STOMP support
 
-Spring Dependencies and Depending on Spring
 
-Although Spring provides integration and support for a huge range of enterprise and other external tools, it intentionally keeps its mandatory dependencies to an absolute minimum: you shouldn’t have to locate and download (even automatically) a large number of jar libraries in order to use Spring for simple use cases. For basic dependency injection there is only one mandatory external dependency, and that is for logging (see below for a more detailed description of logging options).
+Spring依赖和基于Spring
 
-Next we outline the basic steps needed to configure an application that depends on Spring, first with Maven and then with Gradle and finally using Ivy. In all cases, if anything is unclear, refer to the documentation of your dependency management system, or look at some sample code - Spring itself uses Gradle to manage dependencies when it is building, and our samples mostly use Gradle or Maven.
+Although Spring provides integration and support for a huge range of enterprise and other external tools,
+it intentionally keeps its mandatory dependencies to an absolute minimum:
+you shouldn’t have to locate and download (even automatically) a large number of jar libraries in order to use Spring for simple use cases.
+For basic dependency injection there is only one mandatory external dependency, and that is for logging (see below for a more detailed description of logging options).
 
-Maven Dependency Management
 
-If you are using Maven for dependency management you don’t even need to supply the logging dependency explicitly. For example, to create an application context and use dependency injection to configure an application, your Maven dependencies will look like this:
+
+Next we outline the basic steps needed to configure an application that depends on Spring,
+first with Maven and then with Gradle and finally using Ivy.
+In all cases, if anything is unclear, refer to the documentation of your dependency management system,
+or look at some sample code - Spring itself uses Gradle to manage dependencies when it is building, and our samples mostly use Gradle or Maven.
+
+Maven依赖管理
+
+If you are using Maven for dependency management you don’t even need to supply the logging dependency explicitly.
+For example, to create an application context and use dependency injection to configure an application, your Maven dependencies will look like this:
+
+```java
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>4.2.6.RELEASE</version>
+        <scope>runtime</scope>
+    </dependency>
+</dependencies>
+```
+
+That’s it. Note the scope can be declared as runtime if you don’t need to compile against Spring APIs, which is typically the case for basic dependency injection use cases.
+
+The example above works with the Maven Central repository. To use the Spring Maven repository (e.g. for milestones or developer snapshots), you need to specify the repository location in your Maven configuration. For full releases:
+```java
+<repositories>
+    <repository>
+        <id>io.spring.repo.maven.release</id>
+        <url>http://repo.spring.io/release/</url>
+        <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
+For milestones:
+```java
+<repositories>
+    <repository>
+        <id>io.spring.repo.maven.milestone</id>
+        <url>http://repo.spring.io/milestone/</url>
+        <snapshots><enabled>false</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
+And for snapshots:
+```java
+<repositories>
+    <repository>
+        <id>io.spring.repo.maven.snapshot</id>
+        <url>http://repo.spring.io/snapshot/</url>
+        <snapshots><enabled>true</enabled></snapshots>
+    </repository>
+</repositories>
+```
+
+Maven "Bill Of Materials" Dependency
+
+It is possible to accidentally mix different versions of Spring JARs when using Maven. For example, you may find that a third-party library, or another Spring project, pulls in a transitive dependency to an older release. If you forget to explicitly declare a direct dependency yourself, all sorts of unexpected issues can arise.
+
+To overcome such problems Maven supports the concept of a "bill of materials" (BOM) dependency. You can import the spring-framework-bom in your dependencyManagement section to ensure that all spring dependencies (both direct and transitive) are at the same version.
+```java
+<dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-framework-bom</artifactId>
+            <version>4.2.6.RELEASE</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+    </dependencies>
+</dependencyManagement>
+```
+
+An added benefit of using the BOM is that you no longer need to specify the <version> attribute when depending on Spring Framework artifacts:
+```java
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+    </dependency>
+<dependencies>
+```
+
+Gradle Dependency Management
+To use the Spring repository with the Gradle build system, include the appropriate URL in the repositories section:
+```java
+repositories {
+    mavenCentral()
+    // and optionally...
+    maven { url "http://repo.spring.io/release" }
+}
+```
+You can change the repositories URL from /release to /milestone or /snapshot as appropriate. Once a repository has been configured, you can declare dependencies in the usual Gradle way:
+```java
+dependencies {
+    compile("org.springframework:spring-context:4.2.6.RELEASE")
+    testCompile("org.springframework:spring-test:4.2.6.RELEASE")
+}
+```
+
+Ivy Dependency Management
+
+If you prefer to use Ivy to manage dependencies then there are similar configuration options.
+
+To configure Ivy to point to the Spring repository add the following resolver to your ivysettings.xml:
+```java
+<resolvers>
+    <ibiblio name="io.spring.repo.maven.release"
+            m2compatible="true"
+            root="http://repo.spring.io/release/"/>
+</resolvers>
+```
+
+You can change the root URL from /release/ to /milestone/ or /snapshot/ as appropriate.
+
+Once configured, you can add dependencies in the usual way. For example (in ivy.xml):
+```java
+<dependency org="org.springframework"
+    name="spring-core" rev="4.2.6.RELEASE" conf="compile->runtime"/>
+```
+
+Distribution Zip Files
+
+Although using a build system that supports dependency management is the recommended way to obtain the Spring Framework, it is still possible to download a distribution zip file.
+
+Distribution zips are published to the Spring Maven Repository (this is just for our convenience, you don’t need Maven or any other build system in order to download them).
+
+To download a distribution zip open a web browser to http://repo.spring.io/release/org/springframework/spring and select the appropriate subfolder for the version that you want. Distribution files end -dist.zip, for example spring-framework-{spring-version}-RELEASE-dist.zip. Distributions are also published for milestones and snapshots.
+
+2.3.2 Logging
+
+Logging is a very important dependency for Spring because a) it is the only mandatory external dependency, b) everyone likes to see some output from the tools they are using, and c) Spring integrates with lots of other tools all of which have also made a choice of logging dependency. One of the goals of an application developer is often to have unified logging configured in a central place for the whole application, including all external components. This is more difficult than it might have been since there are so many choices of logging framework.
+
+The mandatory logging dependency in Spring is the Jakarta Commons Logging API (JCL). We compile against JCL and we also make JCL Log objects visible for classes that extend the Spring Framework. It’s important to users that all versions of Spring use the same logging library: migration is easy because backwards compatibility is preserved even with applications that extend Spring. The way we do this is to make one of the modules in Spring depend explicitly on commons-logging (the canonical implementation of JCL), and then make all the other modules depend on that at compile time. If you are using Maven for example, and wondering where you picked up the dependency on commons-logging, then it is from Spring and specifically from the central module called spring-core.
+
+The nice thing about commons-logging is that you don’t need anything else to make your application work. It has a runtime discovery algorithm that looks for other logging frameworks in well known places on the classpath and uses one that it thinks is appropriate (or you can tell it which one if you need to). If nothing else is available you get pretty nice looking logs just from the JDK (java.util.logging or JUL for short). You should find that your Spring application works and logs happily to the console out of the box in most situations, and that’s important.
+
+Not Using Commons Logging
+
+Unfortunately, the runtime discovery algorithm in commons-logging, while convenient for the end-user, is problematic. If we could turn back the clock and start Spring now as a new project it would use a different logging dependency. The first choice would probably be the Simple Logging Facade for Java ( SLF4J), which is also used by a lot of other tools that people use with Spring inside their applications.
+
+There are basically two ways to switch off commons-logging:
+
+Exclude the dependency from the spring-core module (as it is the only module that explicitly depends on commons-logging)
+Depend on a special commons-logging dependency that replaces the library with an empty jar (more details can be found in the SLF4J FAQ)
+To exclude commons-logging, add the following to your dependencyManagement section:
+
+```java
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>4.2.6.RELEASE</version>
+        <exclusions>
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+</dependencies>
+```
+
+Now this application is probably broken because there is no implementation of the JCL API on the classpath, so to fix it a new one has to be provided. In the next section we show you how to provide an alternative implementation of JCL using SLF4J as an example.
+
+Using SLF4J
+
+SLF4J is a cleaner dependency and more efficient at runtime than commons-logging because it uses compile-time bindings instead of runtime discovery of the other logging frameworks it integrates. This also means that you have to be more explicit about what you want to happen at runtime, and declare it or configure it accordingly. SLF4J provides bindings to many common logging frameworks, so you can usually choose one that you already use, and bind to that for configuration and management.
+
+SLF4J provides bindings to many common logging frameworks, including JCL, and it also does the reverse: bridges between other logging frameworks and itself. So to use SLF4J with Spring you need to replace the commons-logging dependency with the SLF4J-JCL bridge. Once you have done that then logging calls from within Spring will be translated into logging calls to the SLF4J API, so if other libraries in your application use that API, then you have a single place to configure and manage logging.
+
+A common choice might be to bridge Spring to SLF4J, and then provide explicit binding from SLF4J to Log4J. You need to supply 4 dependencies (and exclude the existing commons-logging): the bridge, the SLF4J API, the binding to Log4J, and the Log4J implementation itself. In Maven you would do that like this
+
+```java
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>4.2.6.RELEASE</version>
+        <exclusions>
+            <exclusion>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+            </exclusion>
+        </exclusions>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>1.5.8</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.8</version>
+    </dependency>
+    <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.8</version>
+    </dependency>
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.14</version>
+    </dependency>
+</dependencies>
+```
+
+That might seem like a lot of dependencies just to get some logging. Well it is, but it is optional, and it should behave better than the vanilla commons-logging with respect to classloader issues, notably if you are in a strict container like an OSGi platform. Allegedly there is also a performance benefit because the bindings are at compile-time not runtime.
+
+A more common choice amongst SLF4J users, which uses fewer steps and generates fewer dependencies, is to bind directly to Logback. This removes the extra binding step because Logback implements SLF4J directly, so you only need to depend on two libraries not four ( jcl-over-slf4j and logback). If you do that you might also need to exclude the slf4j-api dependency from other external dependencies (not Spring), because you only want one version of that API on the classpath.
+
+Using Log4J
+
+Many people use Log4j as a logging framework for configuration and management purposes. It’s efficient and well-established, and in fact it’s what we use at runtime when we build and test Spring. Spring also provides some utilities for configuring and initializing Log4j, so it has an optional compile-time dependency on Log4j in some modules.
+
+To make Log4j work with the default JCL dependency ( commons-logging) all you need to do is put Log4j on the classpath, and provide it with a configuration file ( log4j.properties or log4j.xml in the root of the classpath). So for Maven users this is your dependency declaration:
+
+```java
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>4.2.6.RELEASE</version>
+    </dependency>
+    <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.14</version>
+    </dependency>
+</dependencies>
+```
+
+And here’s a sample log4j.properties for logging to the console:
+
+log4j.rootCategory=INFO, stdout
+
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %t %c{2}:%L - %m%n
+
+log4j.category.org.springframework.beans.factory=DEBUG
+
+Runtime Containers with Native JCL
+
+Many people run their Spring applications in a container that itself provides an implementation of JCL. IBM Websphere Application Server (WAS) is the archetype. This often causes problems, and unfortunately there is no silver bullet solution; simply excluding commons-logging from your application is not enough in most situations.
+
+To be clear about this: the problems reported are usually not with JCL per se, or even with commons-logging: rather they are to do with binding commons-logging to another framework (often Log4J). This can fail because commons-logging changed the way they do the runtime discovery in between the older versions (1.0) found in some containers and the modern versions that most people use now (1.1). Spring does not use any unusual parts of the JCL API, so nothing breaks there, but as soon as Spring or your application tries to do any logging you can find that the bindings to Log4J are not working.
+
+In such cases with WAS the easiest thing to do is to invert the class loader hierarchy (IBM calls it "parent last") so that the application controls the JCL dependency, not the container. That option isn’t always open, but there are plenty of other suggestions in the public domain for alternative approaches, and your mileage may vary depending on the exact version and feature set of the container.
+
+
+
+
+
+
+
+
+
+
+
 
 
 
