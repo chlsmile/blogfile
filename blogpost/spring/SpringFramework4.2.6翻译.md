@@ -576,7 +576,226 @@ Spring 4.1 also improves its own caching abstraction significantly:
 
 Spring 4.1 also has a breaking change in the CacheInterface as a new putIfAbsent method has been added.
 
+4.3 Web Improvements
+- The existing support for resource handling based on the ResourceHttpRequestHandler has been expanded with new abstractions ResourceResolver, ResourceTransformer, and ResourceUrlProvider. A number of built-in implementations provide support for versioned resource URLs (for effective HTTP caching), locating gzipped resources, generating an HTML 5 AppCache manifests, and more. See Section 21.16.9, “Serving of Resources”.
+- JDK 1.8’s java.util.Optional is now supported for @RequestParam, @RequestHeader, and @MatrixVariable controller method arguments.
+- ListenableFuture is supported as a return value alternative to DeferredResult where an underlying service (or perhaps a call to AsyncRestTemplate) already returns ListenableFuture.
+- @ModelAttribute methods are now invoked in an order that respects inter-dependencies. See SPR-6299.
+- Jackson’s @JsonView is supported directly on @ResponseBody and ResponseEntity controller methods for serializing different amounts of detail for the same POJO (e.g. summary vs. detail page). This is also supported with View-based rendering by adding the serialization view type as a model attribute under a special key. See the section called “Jackson Serialization View Support” for details.
+- JSONP is now supported with Jackson. See the section called “Jackson JSONP Support”.
+- A new lifecycle option is available for intercepting @ResponseBody and ResponseEntity methods just after the controller method returns and before the response is written. To take advantage declare an @ControllerAdvice bean that implements ResponseBodyAdvice. The built-in support for @JsonView and JSONP take advantage of this. See Section 21.4.1, “Intercepting requests with a HandlerInterceptor”.
+- There are three new HttpMessageConverter options:
+    - Gson — lighter footprint than Jackson; has already been in use in Spring Android.
+    - Google Protocol Buffers — efficient and effective as an inter-service communication data protocol within an enterprise but can also be exposed as JSON and XML for browsers.
+    - Jackson based XML serialization is now supported through the jackson-dataformat-xml extension. When using @EnableWebMvc or <mvc:annotation-driven/>, this is used by default instead of JAXB2 if jackson-dataformat-xml is in the classpath.
+- Views such as JSPs can now build links to controllers by referring to controller mappings by name. A default name is assigned to every @RequestMapping. For example FooController with method handleFoo is named "FC#handleFoo". The naming strategy is pluggable. It is also possible to name an @RequestMapping explicitly through its name attribute. A new mvcUrl function in the Spring JSP tag library makes this easy to use in JSP pages. See Section 21.7.2, “Building URIs to Controllers and methods from views”.
+- ResponseEntity provides a builder-style API to guide controller methods towards the preparation of server-side responses, e.g. ResponseEntity.ok().
+- RequestEntity is a new type that provides a builder-style API to guide client-side REST code towards the preparation of HTTP requests.
+- MVC Java config and XML namespace:
+    - View resolvers can now be configured including support for content negotiation, see Section 21.16.8, “View Resolvers”.
+    - View controllers now have built-in support for redirects and for setting the response status. An application can use this to configure redirect URLs, render 404 responses with a view, send "no content" responses, etc. Some use cases are listed here.
+    - Path matching customizations are frequently used and now built-in. See Section 21.16.11, “Path Matching”.
+- Groovy markup template support (based on Groovy 2.3). See the GroovyMarkupConfigurer and respecitve ViewResolver and `View' implementations.
 
+4.4 WebSocket Messaging Improvements
+
+- SockJS (Java) client-side support. See SockJsClient and classes in same package.
+- New application context events SessionSubscribeEvent and SessionUnsubscribeEvent published when STOMP clients subscribe and unsubscribe.
+- New "websocket" scope. See Section 25.4.14, “WebSocket Scope”.
+- @SendToUser can target only a single session and does not require an authenticated user.
+- @MessageMapping methods can use dot "." instead of slash "/" as path separator. See SPR-11660.
+- STOMP/WebSocket monitoring info collected and logged. See Section 25.4.16, “Runtime Monitoring”.
+- Significantly optimized and improved logging that should remain very readable and compact even at DEBUG level.
+- Optimized message creation including support for temporary message mutability and avoiding automatic message id and timestamp creation. See Javadoc of MessageHeaderAccessor.
+- Close STOMP/WebSocket connections that have no activity within 60 seconds after the WebSocket session is established. See SPR-11884.
+
+4.5 Testing Improvements
+
+- Groovy scripts can now be used to configure the ApplicationContext loaded for integration tests in the TestContext framework.
+    - See the section called “Context configuration with Groovy scripts” for details.
+- Test-managed transactions can now be programmatically started and ended within transactional test methods via the new TestTransaction API.
+    - See the section called “Programmatic transaction management” for details.
+- SQL script execution can now be configured declaratively via the new @Sql and @SqlConfig annotations on a per-class or per-method basis.
+    - See Section 14.5.7, “Executing SQL scripts” for details.
+- Test property sources which automatically override system and application property sources can be configured via the new @TestPropertySource annotation.
+    - See the section called “Context configuration with test property sources” for details.
+- Default TestExecutionListeners can now be automatically discovered.
+    - See the section called “Automatic discovery of default TestExecutionListeners” for details.
+- Custom TestExecutionListeners can now be automatically merged with the default listeners.
+    - See the section called “Merging TestExecutionListeners” for details.
+- The documentation for transactional testing support in the TestContext framework has been improved with more thorough explanations and additional examples.
+    - See Section 14.5.6, “Transaction management” for details.
+- Various improvements to MockServletContext, MockHttpServletRequest, and other Servlet API mocks.
+- AssertThrows has been refactored to support Throwable instead of Exception.
+- In Spring MVC Test, JSON responses can be asserted with JSON Assert as an extra option to using JSONPath much like it has been possible to do for XML with XMLUnit.
+- MockMvcBuilder recipes can now be created with the help of MockMvcConfigurer. This was added to make it easy to apply Spring Security setup but can be used to encapsulate common setup for any 3rd party framework or within a project.
+- MockRestServiceServer now supports the AsyncRestTemplate for client-side testing.
+
+5. New Features and Enhancements in Spring Framework 4.2
+
+5.1 Core Container Improvements
+
+- Annotations such as @Bean get detected and processed on Java 8 default methods as well, allowing for composing a configuration class from interfaces with default @Bean methods.
+- Configuration classes may declare @Import with regular component classes now, allowing for a mix of imported configuration classes and component classes.
+- Configuration classes may declare an @Order value, getting processed in a corresponding order (e.g. for overriding beans by name) even when detected through classpath scanning.
+- @Resource injection points support an @Lazy declaration, analogous to @Autowired, receiving a lazy-initializing proxy for the requested target bean.
+- The application event infrastructure now offers an annotation-based model as well as the ability to publish any arbitrary event.
+    - Any public method in a managed bean can be annotated with @EventListener to consume events.
+    - @TransactionalEventListener provides transaction-bound event support.
+- Spring Framework 4.2 introduces first-class support for declaring and looking up aliases for annotation attributes. The new @AliasFor annotation can be used to declare a pair of aliased attributes within a single annotation or to declare an alias from one attribute in a custom composed annotation to an attribute in a meta-annotation.
+    - The following annotations have been retrofitted with @AliasFor support in order to provide meaningful aliases for their value attributes: @Cacheable, @CacheEvict, @CachePut, @ComponentScan, @ComponentScan.Filter, @ImportResource, @Scope, @ManagedResource, @Header, @Payload, @SendToUser, @ActiveProfiles, @ContextConfiguration, @Sql, @TestExecutionListeners, @TestPropertySource, @Transactional, @ControllerAdvice, @CookieValue, @CrossOrigin, @MatrixVariable, @RequestHeader, @RequestMapping, @RequestParam, @RequestPart, @ResponseStatus, @SessionAttributes, @ActionMapping, @RenderMapping, @EventListener, @TransactionalEventListener.
+    - For example, @ContextConfiguration from the spring-test module is now declared as follows:
+
+```java
+public @interface ContextConfiguration {
+
+    @AliasFor("locations")
+    String[] value() default {};
+
+    @AliasFor("value")
+    String[] locations() default {};
+
+    // ...
+}
+```
+    - Similarly, composed annotations that override attributes from meta-annotations can now use @AliasFor for fine-grained control over exactly which attributes are overridden within an annotation hierarchy. In fact, it is now possible to declare an alias for the value attribute of a meta-annotation.
+    - For example, one can now develop a composed annotation with a custom attribute override as follows.
+
+```java
+@ContextConfiguration
+public @interface MyTestConfig {
+
+    @AliasFor(annotation = ContextConfiguration.class, attribute = "value")
+    String[] xmlFiles();
+
+    // ...
+}
+```
+    - See Spring Annotation Programming Model.
+
+- Numerous improvements to Spring’s search algorithms used for finding meta-annotations. For example, locally declared composed annotations are now favored over inherited annotations.
+- Composed annotations that override attributes from meta-annotations can now be discovered on interfaces and on abstract, bridge, & interface methods as well as on classes, standard methods, constructors, and fields.
+- Maps representing annotation attributes (and AnnotationAttributes instances) can be synthesized (i.e., converted) into an annotation.
+- The features of field-based data binding (DirectFieldAccessor) have been aligned with the current property-based data binding (BeanWrapper). In particular, field-based binding now supports navigation for Collections, Arrays, and Maps.
+- DefaultConversionService now provides out-of-the-box converters for Stream, Charset, Currency, and TimeZone. Such converters can be added individually to any arbitrary ConversionService as well.
+- DefaultFormattingConversionService comes with out-of-the-box support for the value types in JSR-354 Money & Currency (if the 'javax.money' API is present on the classpath): namely, MonetaryAmount and CurrencyUnit. This includes support for applying @NumberFormat.
+- @NumberFormat can now be used as a meta-annotation.
+- JavaMailSenderImpl has a new testConnection() method for checking connectivity to the server.
+- ScheduledTaskRegistrar exposes scheduled tasks.
+- Apache commons-pool2 is now supported for a pooling AOP CommonsPool2TargetSource.
+- Introduced StandardScriptFactory as a JSR-223 based mechanism for scripted beans, exposed through the lang:std element in XML. Supports e.g. JavaScript and JRuby. (Note: JRubyScriptFactory and lang:jruby are deprecated now, in favor of using JSR-223.)
+
+
+5.2 Data Access Improvements
+- javax.transaction.Transactional is now supported via AspectJ.
+- SimpleJdbcCallOperations now supports named binding.
+- Full support for Hibernate ORM 5.0: as a JPA provider (automatically adapted) as well as through its native API (covered by the new org.springframework.orm.hibernate5 package).
+- Embedded databases can now be automatically assigned unique names, and <jdbc:embedded-database> supports a new database-name attribute. See "Testing Improvements" below for further details.
+
+5.3 JMS Improvements
+- The autoStartup attribute can be controlled via JmsListenerContainerFactory.
+- The type of the reply Destination can now be configured per listener container.
+- The value of the @SendTo annotation can now use a SpEL expression.
+- The response destination can be computed at runtime using JmsResponse
+- @JmsListener is now a repeatable annotation to declare several JMS containers on the same method (use the newly introduced @JmsListeners if you’re not using Java8 yet).
+
+5.4 Web Improvements
+- HTTP Streaming and Server-Sent Events support, see the section called “HTTP Streaming”.
+- Built-in support for CORS including global (MVC Java config and XML namespace) and local (e.g. @CrossOrigin) configuration. See Chapter 26, CORS Support for details.
+- HTTP caching updates:
+    - new CacheControl builder; plugged into ResponseEntity, WebContentGenerator, ResourceHttpRequestHandler.
+    - improved ETag/Last-Modified support in WebRequest.
+- Custom mapping annotations, using @RequestMapping as a meta-annotation.
+- Public methods in AbstractHandlerMethodMapping to register and unregister request mappings at runtime.
+- Protected createDispatcherServlet method in AbstractDispatcherServletInitializer to further customize the DispatcherServlet instance to use.
+- HandlerMethod as a method argument on @ExceptionHandler methods, especially handy in @ControllerAdvice components.
+- java.util.concurrent.CompletableFuture as an @Controller method return value type.
+- Byte-range request support in HttpHeaders and for serving static resources.
+- @ResponseStatus detected on nested exceptions.
+- UriTemplateHandler extension point in the RestTemplate.
+    - DefaultUriTemplateHandler exposes baseUrl property and path segment encoding options.
+    - the extension point can also be used to plug in any URI template library.
+- OkHTTP integration with the RestTemplate.
+- Custom baseUrl alternative for methods in MvcUriComponentsBuilder.
+- Serialization/deserialization exception messages are now logged at WARN level.
+- Default JSON prefix has been changed from "{} && " to the safer ")]}', " one.
+- New RequestBodyAdvice extension point and built-in implementation to support Jackson’s @JsonView on @RequestBody method arguments.
+- When using GSON or Jackson 2.6+, the handler method return type is used to improve serialization of parameterized types like List<Foo>.
+- Introduced ScriptTemplateView as a JSR-223 based mechanism for scripted web views, with a focus on JavaScript view templating on Nashorn (JDK 8).
+
+5.5 WebSocket Messaging Improvements
+- Expose presence information about connected users and subscriptions:
+    - new SimpUserRegistry exposed as a bean named "userRegistry".
+    - sharing of presence information across cluster of servers (see broker relay config options).
+- Resolve user destinations across cluster of servers (see broker relay config options).
+- StompSubProtocolErrorHandler extension point to customize and control STOMP ERROR frames to clients.
+- Global @MessageExceptionHandler methods via @ControllerAdvice components.
+- Heart-beats and a SpEL expression 'selector' header for subscriptions with SimpleBrokerMessageHandler.
+- STOMP client for use over TCP and WebSocket; see Section 25.4.13, “STOMP Client”.
+- @SendTo and @SendToUser can contain destination variable placeholders.
+- Jackson’s @JsonView supported for return values on @MessageMapping and @SubscribeMapping methods.
+- ListenableFuture and CompletableFuture as return value types from @MessageMapping and @SubscribeMapping methods.
+- MarshallingMessageConverter for XML payloads.
+
+5.6 Testing Improvements
+- JUnit-based integration tests can now be executed with JUnit rules instead of the SpringJUnit4ClassRunner. This allows Spring-based integration tests to be run with alternative runners like JUnit’s Parameterized or third-party runners such as the MockitoJUnitRunner.
+    - See the section called “Spring JUnit Rules” for details.
+- The Spring MVC Test framework now provides first-class support for HtmlUnit, including integration with Selenium’s WebDriver, allowing for page-based web application testing without the need to deploy to a Servlet container.
+    - See Section 14.6.2, “HtmlUnit Integration” for details.
+- AopTestUtils is a new testing utility that allows developers to obtain a reference to the underlying target object hidden behind one or more Spring proxies.
+    - See Section 13.2.1, “General testing utilities” for details.
+- ReflectionTestUtils now supports setting and getting static fields, including constants.
+- The original ordering of bean definition profiles declared via @ActiveProfiles is now retained in order to support use cases such as Spring Boot’s ConfigFileApplicationListener which loads configuration files based on the names of active profiles.
+- @DirtiesContext supports new BEFORE_METHOD, BEFORE_CLASS, and BEFORE_EACH_TEST_METHOD modes for closing the ApplicationContext before a test — for example, if some rogue (i.e., yet to be determined) test within a large test suite has corrupted the original configuration for the ApplicationContext.
+- @Commit is a new annotation that may be used as a direct replacement for @Rollback(false).
+- @Rollback may now be used to configure class-level default rollback semantics.
+    - Consequently, @TransactionConfiguration is now deprecated and will be removed in a subsequent release.
+- @Sql now supports execution of inlined SQL statements via a new statements attribute.
+- The ContextCache that is used for caching ApplicationContexts between tests is now a public API with a default implementation that can be replaced for custom caching needs.
+- DefaultTestContext, DefaultBootstrapContext, and DefaultCacheAwareContextLoaderDelegate are now public classes in the support subpackage, allowing for custom extensions.
+- TestContextBootstrappers are now responsible for building the TestContext.
+- In the Spring MVC Test framework, MvcResult details can now be logged at DEBUG level or written to a custom OutputStream or Writer. See the new log(), print(OutputStream), and print(Writer) methods in MockMvcResultHandlers for details.
+- The JDBC XML namespace supports a new database-name attribute in <jdbc:embedded-database>, allowing developers to set unique names for embedded databases –- for example, via a SpEL expression or a property placeholder that is influenced by the current active bean definition profiles.
+- Embedded databases can now be automatically assigned a unique name, allowing common test database configuration to be reused in different ApplicationContexts within a test suite.
+    - See Section 18.8.6, “Generating unique names for embedded databases” for details.
+- MockHttpServletRequest and MockHttpServletResponse now provide better support for date header formatting via the getDateHeader and setDateHeader methods.
+
+Part III. Core Technologies
+
+This part of the reference documentation covers all of those technologies that are absolutely integral to the Spring Framework.
+
+Foremost amongst these is the Spring Framework’s Inversion of Control (IoC) container. A thorough treatment of the Spring Framework’s IoC container is closely followed by comprehensive coverage of Spring’s Aspect-Oriented Programming (AOP) technologies. The Spring Framework has its own AOP framework, which is conceptually easy to understand, and which successfully addresses the 80% sweet spot of AOP requirements in Java enterprise programming.
+
+Coverage of Spring’s integration with AspectJ (currently the richest - in terms of features - and certainly most mature AOP implementation in the Java enterprise space) is also provided.
+
+- Chapter 6, The IoC container
+- Chapter 7, Resources
+- Chapter 8, Validation, Data Binding, and Type Conversion
+- Chapter 9, Spring Expression Language (SpEL)
+- Chapter 10, Aspect Oriented Programming with Spring
+- Chapter 11, Spring AOP APIs
+
+6. The IoC container
+
+6.1 Introduction to the Spring IoC container and beans
+
+This chapter covers the Spring Framework implementation of the Inversion of Control (IoC) [1] principle. IoC is also known as dependency injection (DI). It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method. The container then injects those dependencies when it creates the bean. This process is fundamentally the inverse, hence the name Inversion of Control (IoC), of the bean itself controlling the instantiation or location of its dependencies by using direct construction of classes, or a mechanism such as the Service Locator pattern.
+
+The org.springframework.beans and org.springframework.context packages are the basis for Spring Framework’s IoC container. The BeanFactory interface provides an advanced configuration mechanism capable of managing any type of object. ApplicationContext is a sub-interface of BeanFactory. It adds easier integration with Spring’s AOP features; message resource handling (for use in internationalization), event publication; and application-layer specific contexts such as the WebApplicationContext for use in web applications.
+
+In short, the BeanFactory provides the configuration framework and basic functionality, and the ApplicationContext adds more enterprise-specific functionality. The ApplicationContext is a complete superset of the BeanFactory, and is used exclusively in this chapter in descriptions of Spring’s IoC container. For more information on using the BeanFactory instead of the ApplicationContext, refer to Section 6.16, “The BeanFactory”.
+
+In Spring, the objects that form the backbone of your application and that are managed by the Spring IoC container are called beans. A bean is an object that is instantiated, assembled, and otherwise managed by a Spring IoC container. Otherwise, a bean is simply one of many objects in your application. Beans, and the dependencies among them, are reflected in the configuration metadata used by a container.
+
+6.2 Container overview
+
+The interface org.springframework.context.ApplicationContext represents the Spring IoC container and is responsible for instantiating, configuring, and assembling the aforementioned beans. The container gets its instructions on what objects to instantiate, configure, and assemble by reading configuration metadata. The configuration metadata is represented in XML, Java annotations, or Java code. It allows you to express the objects that compose your application and the rich interdependencies between such objects.
+
+Several implementations of the ApplicationContext interface are supplied out-of-the-box with Spring. In standalone applications it is common to create an instance of ClassPathXmlApplicationContext or FileSystemXmlApplicationContext. While XML has been the traditional format for defining configuration metadata you can instruct the container to use Java annotations or code as the metadata format by providing a small amount of XML configuration to declaratively enable support for these additional metadata formats.
+
+In most application scenarios, explicit user code is not required to instantiate one or more instances of a Spring IoC container. For example, in a web application scenario, a simple eight (or so) lines of boilerplate web descriptor XML in the web.xml file of the application will typically suffice (see Section 6.15.4, “Convenient ApplicationContext instantiation for web applications”). If you are using the Spring Tool Suite Eclipse-powered development environment this boilerplate configuration can be easily created with few mouse clicks or keystrokes.
+
+The following diagram is a high-level view of how Spring works. Your application classes are combined with configuration metadata so that after the ApplicationContext is created and initialized, you have a fully configured and executable system or application.
 
 
 
