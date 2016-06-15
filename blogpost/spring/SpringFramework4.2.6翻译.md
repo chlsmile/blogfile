@@ -353,21 +353,13 @@ b)依赖一个特殊的commons-logging依赖,使用空jar包来替代(更多信�
 
 使用SLF4J
 
-SLF4J is a cleaner dependency and more efficient at runtime than commons-logging because it uses compile-time bindings instead of runtime discovery of the other logging frameworks it integrates.
-This also means that you have to be more explicit about what you want to happen at runtime, and declare it or configure it accordingly.
-SLF4J provides bindings to many common logging frameworks, so you can usually choose one that you already use, and bind to that for configuration and management.
-SLF4J是一个简洁的依赖并且在运行时比commons-logging更有效, 因为他使用了编译期绑定来替代其它日志组件运行期动态查找机制。
+SLF4J是一个干净的依赖并且在运行时比commons-logging更有效, 因为他使用了编译期绑定来替代其它日志组件运行期动态查找机制。这也意味着你必须明确的知道在运行期去做什么,并声明配置它。SLF4J为很多通用的日志框架提供绑定,所以你可以从中选择一个你正在使用的并绑定管理。
 
+SLF4J提供对很多常用日志框架的绑定,包括JCL,它提供反向的功能:桥接其它日志框架和它自己。所以如果要在Spring中使用SLF4J,你需要使用SLF4J-JCL桥接来代替commons-logging依赖。一旦你已经进行了替换,在Spring日志日志调用会转行成SLF4J的API,如果在你应用程序的其它类库使用那个API，那么你需要有一个单独的地方来配置和管理日志。
 
+一个常用的选择可能是桥接Spring的log到SLF4J,并提供一个明确从SLF4J到Log4J的桥接。你需要提供4个依赖(并排除已经存在的commons-logging):桥接工具,SLF4J API,绑定到Log4J,还有Log4J本身的实现。
 
-SLF4J provides bindings to many common logging frameworks, including JCL, and it also does the reverse: bridges between other logging frameworks and itself.
-So to use SLF4J with Spring you need to replace the commons-logging dependency with the SLF4J-JCL bridge.
-Once you have done that then logging calls from within Spring will be translated into logging calls to the SLF4J API, so if other libraries in your application use that API, then you have a single place to configure and manage logging.
-
-A common choice might be to bridge Spring to SLF4J, and then provide explicit binding from SLF4J to Log4J.
-You need to supply 4 dependencies (and exclude the existing commons-logging): the bridge, the SLF4J API, the binding to Log4J, and the Log4J implementation itself.
-In Maven you would do that like this
-
+在Maven中你可以这样配置:
 ```java
 <dependencies>
     <dependency>
@@ -404,15 +396,15 @@ In Maven you would do that like this
 </dependencies>
 ```
 
-That might seem like a lot of dependencies just to get some logging. Well it is, but it is optional, and it should behave better than the vanilla commons-logging with respect to classloader issues, notably if you are in a strict container like an OSGi platform. Allegedly there is also a performance benefit because the bindings are at compile-time not runtime.
+这似乎有很多依赖只是为了获取日志。确实是这样,但它是可选的,而且它的性能要比由于类加载器问题的commons-logging好很多,尤其是如果你使用了一个严格限制的容器,比如OSGi平台。据称那也有性能优势,因为绑定是编译时的而不是运行时的。
 
-A more common choice amongst SLF4J users, which uses fewer steps and generates fewer dependencies, is to bind directly to Logback. This removes the extra binding step because Logback implements SLF4J directly, so you only need to depend on two libraries not four ( jcl-over-slf4j and logback). If you do that you might also need to exclude the slf4j-api dependency from other external dependencies (not Spring), because you only want one version of that API on the classpath.
+在SLF4J用户中一个更为常见的选择是使用步骤少并产生更少的依赖的方案,就是直接绑定到Logback。它消除了额外的绑定操作步骤因为Logback直接实现了SLF4J,所以你只需要依赖两个类库(jcl-over-slf4j和logback)而不是四个。如果你要这样做你也需求从其它依赖中(不是Spring)排除对slf4j-api的依赖,因为你仅仅想在classpath中的日志API只有一个版本。
 
-Using Log4J
+使用Log4J
 
-Many people use Log4j as a logging framework for configuration and management purposes. It’s efficient and well-established, and in fact it’s what we use at runtime when we build and test Spring. Spring also provides some utilities for configuring and initializing Log4j, so it has an optional compile-time dependency on Log4j in some modules.
+很多人出于配置和管理目的而使用Log4j作为日志框架。这也很有效率并且易于创建,而且事实上它也是我们构建和测试Spring时在运行时环境中使用的。Spring也提供一些工具来配置和初始化Log4j,所以在某些模块中它也提供了可选的编译时对Log4j的依赖。
 
-To make Log4j work with the default JCL dependency ( commons-logging) all you need to do is put Log4j on the classpath, and provide it with a configuration file ( log4j.properties or log4j.xml in the root of the classpath). So for Maven users this is your dependency declaration:
+要让Log4j和默认的JCL依赖(commons-logging)起作用,你所要做的就是将Log4j放置到classpath下,并且提供配置文件(在classpath的根路径下放置log4j.properties或log4j.xml)而对于Maven用户来说,可以采用下面的maven依赖配置:
 
 ```java
 <dependencies>
@@ -429,23 +421,35 @@ To make Log4j work with the default JCL dependency ( commons-logging) all you ne
 </dependencies>
 ```
 
-And here’s a sample log4j.properties for logging to the console:
+下面是log4j.properties打印到控制台的日志的配置示例：
 
+```java
 log4j.rootCategory=INFO, stdout
-
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
-log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %t %c{2}:%L - %m%n
-
+log4j.appender.stdout.layout.ConversionPattern=%d{ABSOLUTE} %5p %t %c{2}:%L - %m%n、
 log4j.category.org.springframework.beans.factory=DEBUG
+```java
 
-Runtime Containers with Native JCL
+运行时容器和本地的JCL
 
-Many people run their Spring applications in a container that itself provides an implementation of JCL. IBM Websphere Application Server (WAS) is the archetype. This often causes problems, and unfortunately there is no silver bullet solution; simply excluding commons-logging from your application is not enough in most situations.
+Many people run their Spring applications in a container that itself provides an implementation of JCL.
+IBM Websphere Application Server (WAS) is the archetype.
+This often causes problems, and unfortunately there is no silver bullet solution;
+simply excluding commons-logging from your application is not enough in most situations.
 
-To be clear about this: the problems reported are usually not with JCL per se, or even with commons-logging: rather they are to do with binding commons-logging to another framework (often Log4J). This can fail because commons-logging changed the way they do the runtime discovery in between the older versions (1.0) found in some containers and the modern versions that most people use now (1.1). Spring does not use any unusual parts of the JCL API, so nothing breaks there, but as soon as Spring or your application tries to do any logging you can find that the bindings to Log4J are not working.
 
-In such cases with WAS the easiest thing to do is to invert the class loader hierarchy (IBM calls it "parent last") so that the application controls the JCL dependency, not the container. That option isn’t always open, but there are plenty of other suggestions in the public domain for alternative approaches, and your mileage may vary depending on the exact version and feature set of the container.
+
+To be clear about this: the problems reported are usually not with JCL per se, or even with commons-logging:
+rather they are to do with binding commons-logging to another framework (often Log4J).
+This can fail because commons-logging changed the way they do the runtime discovery in between the older versions (1.0) found in some containers and the modern versions that most people use now (1.1).
+Spring does not use any unusual parts of the JCL API, so nothing breaks there,
+but as soon as Spring or your application tries to do any logging you can find that the bindings to Log4J are not working.
+
+In such cases with WAS the easiest thing to do is to invert the class loader hierarchy (IBM calls it "parent last") so that the application controls the JCL dependency, not the container.
+That option isn’t always open,
+but there are plenty of other suggestions in the public domain for alternative approaches,
+and your mileage may vary depending on the exact version and feature set of the container.
 
 
 
