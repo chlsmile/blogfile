@@ -775,9 +775,9 @@ Coverage of Spring’s integration with AspectJ (currently the richest - in term
 - Chapter 10, Aspect Oriented Programming with Spring
 - Chapter 11, Spring AOP APIs
 
-6. IoC 容器
+#### 6. IoC 容器
 
-6.1 介绍Spring IoC容器和beans
+#### 6.1 介绍Spring IoC容器和beans
 
 本章节覆盖了Spring框架的控制反转(IoC)实现原理。IoC也被称作依赖注入(DI)。
 It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.
@@ -789,31 +789,32 @@ org.springframework.beans包和org.springframework.context包是Spring框架的�
 
 在Spring中构建应用程序的对象是由Spring IoC容器进行管理的,这些对象称作beans。一个bean就是一个对新,这个对新的创建,组装,和其它的生命周期都是由Spring IoC容器管理的。否则,bean就是应用程序中的众多对象中的一个。Beans,和他们之间的依赖,是有容器来来配置管理的。
 
-6.2 容器概述
+#### 6.2 容器概述
 
 org.springframework.context.ApplicationContext表示Spring IoC容器,来负责初始化,配置,和组装定义好的beans。容器通过读取配置信息来获取哪些bean需要实例化,配置,和组装。配置可以采用XML的方式,Java annotations方式,或者Java编码方式。It allows you to express the objects that compose your application and the rich interdependencies between such objects.
 
 ApplicationContext接口的一些实现使用Spring开箱的支持。在独立的应用程序中,通常是来创建ClassPathXmlApplicationContext或FileSystemXmlApplicationContext的实例。XML是定义配置元数据的传统格式,你可以指示容器使用Java的注解或是代码作为元数据的格式,提供少量的XML配置声明来开启对这些额外的元数据格式的支持。
 
-In most application scenarios, explicit user code is not required to instantiate one or more instances of a Spring IoC container.
-For example, in a web application scenario, a simple eight (or so) lines of boilerplate web descriptor XML in the web.xml file of the application will typically suffice (see Section 6.15.4, “Convenient ApplicationContext instantiation for web applications”).
-If you are using the Spring Tool Suite Eclipse-powered development environment this boilerplate configuration can be easily created with few mouse clicks or keystrokes.
+在大多数的应用场景中,用户并不需要自己明确的自己编码去获取一个Spring IoC容器实例。例如,一个web应用场景中,在web应用程序的web.xml配置文件中简单的八行左右的样板J2EE描述符XML文件通常就够了(参考6.15.4节“便捷的对Web应用程序应用上下文进行实例化”)。如果你正使用Spring的工具套件，Eclipse支持的开发环境样板配置，就可以容易地被创建，点几下鼠标或按键就可以了。
+
+下文从更高角度来说明Spring是如何工作的。你的应用程序类和配置元数据相组合，所以在ApplicationContext被创建和实例化后，就得到了一个完全配置的可执行系统或程序。
 
 
-
-
-The following diagram is a high-level view of how Spring works.
-Your application classes are combined with configuration metadata so that after the ApplicationContext is created and initialized, you have a fully configured and executable system or application.
-
-
-Figure 6.1. The Spring IoC container
+图 6.1. Spring IoC容器
 ![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/container-magic.png)
 
-6.2.1 Configuration metadata
+#### 6.2.1 配置元数据 metadata
 
-As the preceding diagram shows, the Spring IoC container consumes a form of configuration metadata; this configuration metadata represents how you as an application developer tell the Spring container to instantiate, configure, and assemble the objects in your application.
+As the preceding diagram shows, the Spring IoC container consumes a form of configuration metadata;
+this configuration metadata represents how you as an application developer tell the Spring container to instantiate, configure, and assemble the objects in your application.
 
-Configuration metadata is traditionally supplied in a simple and intuitive XML format, which is what most of this chapter uses to convey key concepts and features of the Spring IoC container.
+
+
+Configuration metadata is traditionally supplied in a simple and intuitive XML format,
+which is what most of this chapter uses to convey key concepts and features of the Spring IoC container.
+
+
+
 
 [Note]
 XML-based metadata is not the only allowed form of configuration metadata. The Spring IoC container itself is totally decoupled from the format in which this configuration metadata is actually written. These days many developers choose Java-based configuration for their Spring applications.
