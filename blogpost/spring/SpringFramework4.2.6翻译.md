@@ -800,7 +800,7 @@ ApplicationContext接口的一些实现使用Spring开箱的支持。在独立�
 下文从更高角度来说明Spring是如何工作的。你的应用程序类和配置元数据相组合，所以在ApplicationContext被创建和实例化后，就得到了一个完全配置的可执行系统或程序。
 
 
-图 6.1. Spring IoC容器
+**图Spring IoC容器**
 
 ![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/container-magic.png)
 
