@@ -811,8 +811,8 @@ ApplicationContext接口的一些实现使用Spring开箱的支持。在独立�
 
 配置元数据传统上是以直观的XML格式提供的，本章的大部分内容使用它来阐述Spring IoC容器关键概念和功能。
 
-> 注意
-  基于XML的元数据并不是唯一的配置元数据方式。这种配置元数据真正写入时,Spring的IoC容器本身和这种配置完全是解耦的。
+> **注意** 基于XML的元数据并不是唯一的配置元数据方式。这种配置元数据真正写入时,Spring的IoC容器本身和这种配置完全是解耦的。
+
 
 
 XML-based metadata is not the only allowed form of configuration metadata.
