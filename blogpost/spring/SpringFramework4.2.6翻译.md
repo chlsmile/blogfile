@@ -807,19 +807,17 @@ ApplicationContext接口的一些实现使用Spring开箱的支持。在独立�
 
 #### 6.2.1 配置元数据 metadata
 
-As the preceding diagram shows, the Spring IoC container consumes a form of configuration metadata;
-this configuration metadata represents how you as an application developer tell the Spring container to instantiate, configure, and assemble the objects in your application.
+如上图所示,Spring的IoC容器处理配置元数据的一种形式;这个配置元数据代表了应用开发人员是如何告诉Spring容器在你的应用程序中来实例化,配置并装配对象的。
+
+配置元数据传统上是以直观的XML格式提供的，本章的大部分内容使用它来阐述Spring IoC容器关键概念和功能。
+
+> 注意
+  基于XML的元数据并不是唯一的配置元数据方式。这种配置元数据真正写入时,Spring的IoC容器本身和这种配置完全是解耦的。
 
 
-
-Configuration metadata is traditionally supplied in a simple and intuitive XML format,
-which is what most of this chapter uses to convey key concepts and features of the Spring IoC container.
-
-
-
-
-[Note]
-XML-based metadata is not the only allowed form of configuration metadata. The Spring IoC container itself is totally decoupled from the format in which this configuration metadata is actually written. These days many developers choose Java-based configuration for their Spring applications.
+XML-based metadata is not the only allowed form of configuration metadata.
+The Spring IoC container itself is totally decoupled from the format in which this configuration metadata is actually written.
+These days many developers choose Java-based configuration for their Spring applications.
 
 For information about using other forms of metadata with the Spring container, see:
 
