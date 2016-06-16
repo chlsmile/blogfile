@@ -823,13 +823,11 @@ Spring configuration consists of at least one and typically more than one bean d
 XML-based configuration metadata shows these beans configured as <bean/> elements inside a top-level <beans/> element.
 Java configuration typically uses @Bean annotated methods within a @Configuration class.
 
-These bean definitions correspond to the actual objects that make up your application.
-Typically you define service layer objects, data access objects (DAOs), presentation objects such as Struts Action instances, infrastructure objects such as Hibernate SessionFactories, JMS Queues, and so forth.
-Typically one does not configure fine-grained domain objects in the container, because it is usually the responsibility of DAOs and business logic to create and load domain objects.
-However, you can use Spring’s integration with AspectJ to configure objects that have been created outside the control of an IoC container.
-See Using AspectJ to dependency-inject domain objects with Spring.
 
-The following example shows the basic structure of XML-based configuration metadata:
+
+这些bean的定义对应构成应用程序中真实的对象。典型你定义业务层(service)对象,数据访问层对象(dao),展现层对象例如Struts Action 实列,，基础设置对象比如Hibernate的SesstionFactories，JMS的Queues等这些典型的例子。典型的你不用在容器中定义细粒度的领域模型对象，因为这通常是由DAO和业务逻辑负责创建并加载的领域对象。但是你也可以使用Spring和AspectJ整合来配置创建在IoC容器控制之外的对象。参考使用在Spring中使用AspectJ来对领域对象进行依赖注入。
+
+下面的例子展示了一个基于XML配置的元数据:
 
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
@@ -847,13 +845,17 @@ The following example shows the basic structure of XML-based configuration metad
     </bean>
 
     <!-- more bean definitions go here -->
-
 </beans>
 ```
-The id attribute is a string that you use to identify the individual bean definition. The class attribute defines the type of the bean and uses the fully qualified classname. The value of the id attribute refers to collaborating objects. The XML for referring to collaborating objects is not shown in this example; see Dependencies for more information.
+id属性是一个字符串，用来标识定义的独立的bean。class属性定义了bean的类型,需要使用类的完全限定类名。id属性的值指的就是协作对象。协作对象的XML在这个示例中没有展示;参考依赖来获取更多信息。
 
-6.2.2 Instantiating a container
+
+
+#### 6.2.2 实例化容器
 Instantiating a Spring IoC container is straightforward. The location path or paths supplied to an ApplicationContext constructor are actually resource strings that allow the container to load configuration metadata from a variety of external resources such as the local file system, from the Java CLASSPATH, and so on.
+实例化一个Spring的IoC容器是很简单的。
+
+
 
 ```java
 ApplicationContext context=new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
