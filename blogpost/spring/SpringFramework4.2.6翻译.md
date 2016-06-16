@@ -779,49 +779,27 @@ Coverage of Spring’s integration with AspectJ (currently the richest - in term
 
 6.1 介绍Spring IoC容器和beans
 
-This chapter covers the Spring Framework implementation of the Inversion of Control (IoC) [1] principle.
-IoC is also known as dependency injection (DI).
+本章节覆盖了Spring框架的控制反转(IoC)实现原理。IoC也被称作依赖注入(DI)。
 It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.
-The container then injects those dependencies when it creates the bean.
-This process is fundamentally the inverse, hence the name Inversion of Control (IoC), of the bean itself controlling the instantiation or location of its dependencies by using direct construction of classes, or a mechanism such as the Service Locator pattern.
-本章节覆盖了Spring框架的控制反转(IoC)实现原理。
-IoC也被称作依赖注入(DI).
+当创建bean的时候容器注入bean的那些依赖。这个过程从根本上进行了反转,于是有了控制反转这个名字(IoC),of the bean itself controlling the instantiation or location of its dependencies by using direct construction of classes, or a mechanism such as the Service Locator pattern.
 
+org.springframework.beans包和org.springframework.context包是Spring框架的基本Io容器。BeanFactory接口提供了能管理任何类型对象的高级配置机制。ApplicationContext是BeanFactory的一个子接口。它增加了更容易集成Spring AOP功能;消息资源管理(用于国际化),事件发布;和应用层特殊的上下文,例如在web应用中使用的WebApplicationContext。
 
+简而言之,BeanFactory提供了Spring配置框架的基本功能,而ApplicationContext增加了更多的企业级应用功能。ApplicationContext是BeanFactory的一个完全超集,and is used exclusively in this chapter in descriptions of Spring’s IoC container.如果要用BeanFactory来代替ApplicationContext更新信息可以参考章节6.16"The BeanFactory"。
 
+在Spring中构建应用程序的对象是由Spring IoC容器进行管理的,这些对象称作beans。一个bean就是一个对新,这个对新的创建,组装,和其它的生命周期都是由Spring IoC容器管理的。否则,bean就是应用程序中的众多对象中的一个。Beans,和他们之间的依赖,是有容器来来配置管理的。
 
-The org.springframework.beans and org.springframework.context packages are the basis for Spring Framework’s IoC container.
-The BeanFactory interface provides an advanced configuration mechanism capable of managing any type of object.
-ApplicationContext is a sub-interface of BeanFactory.
-It adds easier integration with Spring’s AOP features; message resource handling (for use in internationalization), event publication; and application-layer specific contexts such as the WebApplicationContext for use in web applications.
+6.2 容器概述
 
+org.springframework.context.ApplicationContext表示Spring IoC容器,来负责初始化,配置,和组装定义好的beans。容器通过读取配置信息来获取哪些bean需要实例化,配置,和组装。配置可以采用XML的方式,Java annotations方式,或者Java编码方式。It allows you to express the objects that compose your application and the rich interdependencies between such objects.
 
-In short, the BeanFactory provides the configuration framework and basic functionality, and the ApplicationContext adds more enterprise-specific functionality.
-The ApplicationContext is a complete superset of the BeanFactory, and is used exclusively in this chapter in descriptions of Spring’s IoC container.
-For more information on using the BeanFactory instead of the ApplicationContext, refer to Section 6.16, “The BeanFactory”.
-
-In Spring, the objects that form the backbone of your application and that are managed by the Spring IoC container are called beans.
-A bean is an object that is instantiated, assembled, and otherwise managed by a Spring IoC container.
-Otherwise, a bean is simply one of many objects in your application.
-Beans, and the dependencies among them, are reflected in the configuration metadata used by a container.
-
-
-6.2 Container overview
-
-The interface org.springframework.context.ApplicationContext represents the Spring IoC container and is responsible for instantiating, configuring, and assembling the aforementioned beans.
-The container gets its instructions on what objects to instantiate, configure, and assemble by reading configuration metadata.
-The configuration metadata is represented in XML, Java annotations, or Java code.
-It allows you to express the objects that compose your application and the rich interdependencies between such objects.
-
-
-Several implementations of the ApplicationContext interface are supplied out-of-the-box with Spring.
-In standalone applications it is common to create an instance of ClassPathXmlApplicationContext or FileSystemXmlApplicationContext.
-While XML has been the traditional format for defining configuration metadata you can instruct the container to use Java annotations or code as the metadata format by providing a small amount of XML configuration to declaratively enable support for these additional metadata formats.
-
+ApplicationContext接口的一些实现使用Spring开箱的支持。在独立的应用程序中,通常是来创建ClassPathXmlApplicationContext或FileSystemXmlApplicationContext的实例。XML是定义配置元数据的传统格式,你可以指示容器使用Java的注解或是代码作为元数据的格式,提供少量的XML配置声明来开启对这些额外的元数据格式的支持。
 
 In most application scenarios, explicit user code is not required to instantiate one or more instances of a Spring IoC container.
 For example, in a web application scenario, a simple eight (or so) lines of boilerplate web descriptor XML in the web.xml file of the application will typically suffice (see Section 6.15.4, “Convenient ApplicationContext instantiation for web applications”).
 If you are using the Spring Tool Suite Eclipse-powered development environment this boilerplate configuration can be easily created with few mouse clicks or keystrokes.
+
+
 
 
 The following diagram is a high-level view of how Spring works.
