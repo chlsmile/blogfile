@@ -801,7 +801,9 @@ ApplicationContext接口的一些实现使用Spring开箱的支持。在独立�
 
 
 图 6.1. Spring IoC容器
+
 ![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/container-magic.png)
+
 
 #### 6.2.1 配置元数据 metadata
 
