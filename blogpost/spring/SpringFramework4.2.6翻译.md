@@ -811,18 +811,13 @@ ApplicationContext接口的一些实现使用Spring开箱的支持。在独立�
 
 配置元数据传统上是以直观的XML格式提供的，本章的大部分内容使用它来阐述Spring IoC容器关键概念和功能。
 
-> **注意** 基于XML的元数据并不是唯一的配置元数据方式。这种配置元数据真正写入时,Spring的IoC容器本身和这种配置完全是解耦的。
+> **注意** 基于XML的元数据并不是唯一的配置元数据方式。这种配置元数据真正写入时,Spring的IoC容器本身和这种配置完全是解耦的。现在许多开发者选择java基础配置作为他们的Spring应用。
 
+更多关于Spring容器使用元数据格式的方式可以参考下面:
 
+- 基于注解的配置方式:Spring 2.5引入了对基于注解元数据的支持。
+- 基于Java配置方式:从Spring3.0开始,很多由Spring JavaConfig项目提供的特性变成了Spring Framework的核心。因此你可以在应用程序外部来定义bean，使用Java代码而不是XML文件。要使用这些新的特性，请参考@Configuration，@Bean，@Import和@DependsOn注解。
 
-XML-based metadata is not the only allowed form of configuration metadata.
-The Spring IoC container itself is totally decoupled from the format in which this configuration metadata is actually written.
-These days many developers choose Java-based configuration for their Spring applications.
-
-For information about using other forms of metadata with the Spring container, see:
-
-- Annotation-based configuration: Spring 2.5 introduced support for annotation-based configuration metadata.
-- Java-based configuration: Starting with Spring 3.0, many features provided by the Spring JavaConfig project became part of the core Spring Framework. Thus you can define beans external to your application classes by using Java rather than XML files. To use these new features, see the @Configuration, @Bean, @Import and @DependsOn annotations.
 
 Spring configuration consists of at least one and typically more than one bean definition that the container must manage.
 XML-based configuration metadata shows these beans configured as <bean/> elements inside a top-level <beans/> element.
