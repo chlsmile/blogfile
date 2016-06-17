@@ -852,18 +852,20 @@ id属性是一个字符串，用来标识定义的独立的bean。class属性定
 
 
 #### 6.2.2 实例化容器
-Instantiating a Spring IoC container is straightforward. The location path or paths supplied to an ApplicationContext constructor are actually resource strings that allow the container to load configuration metadata from a variety of external resources such as the local file system, from the Java CLASSPATH, and so on.
-实例化一个Spring的IoC容器是很简单的。
+实例化一个Spring的IoC容器是很简单的。The location path or paths supplied to an ApplicationContext constructor are actually resource strings that allow the container to load configuration metadata from a variety of external resources such as the local file system, from the Java CLASSPATH, and so on.
+
 
 
 
 ```java
 ApplicationContext context=new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
 ```
-[Note]
-After you learn about Spring’s IoC container, you may want to know more about Spring’s Resource abstraction, as described in Chapter 7, Resources, which provides a convenient mechanism for reading an InputStream from locations defined in a URI syntax. In particular, Resource paths are used to construct applications contexts as described in Section 7.7, “Application contexts and Resource paths”.
 
-The following example shows the service layer objects (services.xml) configuration file:
+[Note]
+After you learn about Spring’s IoC container, you may want to know more about Spring’s Resource abstraction, as described in Chapter 7, Resources, which provides a convenient mechanism for reading an InputStream from locations defined in a URI syntax.
+
+
+下面的例子展示了service层对象(services.xml)配置文件:
 
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
@@ -873,7 +875,6 @@ The following example shows the service layer objects (services.xml) configurati
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <!-- services -->
-
     <bean id="petStore" class="org.springframework.samples.jpetstore.services.PetStoreServiceImpl">
         <property name="accountDao" ref="accountDao"/>
         <property name="itemDao" ref="itemDao"/>
@@ -881,11 +882,10 @@ The following example shows the service layer objects (services.xml) configurati
     </bean>
 
     <!-- more bean definitions for services go here -->
-
 </beans>
 ```
 
-The following example shows the data access objects daos.xml file:
+下面的例子展示了数据访问层对象dao.xml配置文件:
 ```java
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -903,16 +903,16 @@ The following example shows the data access objects daos.xml file:
     </bean>
 
     <!-- more bean definitions for data access objects go here -->
-
 </beans>
 ```
-In the preceding example, the service layer consists of the class PetStoreServiceImpl, and two data access objects of the type JpaAccountDao and JpaItemDao (based on the JPA Object/Relational mapping standard). The property name element refers to the name of the JavaBean property, and the ref element refers to the name of another bean definition. This linkage between id and ref elements expresses the dependency between collaborating objects. For details of configuring an object’s dependencies, see Dependencies.
+在前面的例子中,service层包含了PetStoreServiceImpl类,和两个数据层访问对象JpaAccountDao和JpaItemDao(基于JPA对象/关系映射标准)。property的name元素指的是JavaBean的属性名，而ref元素指的是其它bean定义的名称。id和ref元素之间的这种联系表示了两个协作对象的依赖关系。要了解更多配置对象依赖的信息,可以查看Dependencies。
 
-Composing XML-based configuration metadata
+构成XML的配置元数据
 
-It can be useful to have bean definitions span multiple XML files. Often each individual XML configuration file represents a logical layer or module in your architecture.
+在多个XML文件中定义bean是很有用的。通常每个独立的XML配置文件代表了一个逻辑层或架构中的一个模块。
 
-You can use the application context constructor to load bean definitions from all these XML fragments. This constructor takes multiple Resource locations, as was shown in the previous section. Alternatively, use one or more occurrences of the <import/> element to load bean definitions from another file or files. For example:
+你可以使用ApplicationContext的构造方法从所有的XML文件片段中来加载bean,这个构造方法可以接收多个Resource位置，这在之前的部分都已经看到了。另外，可以使用一个或多个<import/>元素来从另外的一个或多个文件中加载bean。例如：
+
 ```java
 <beans>
     <import resource="services.xml"/>
@@ -923,11 +923,25 @@ You can use the application context constructor to load bean definitions from al
     <bean id="bean2" class="..."/>
 </beans>
 ```
-In the preceding example, external bean definitions are loaded from three files: services.xml, messageSource.xml, and themeSource.xml. All location paths are relative to the definition file doing the importing, so services.xml must be in the same directory or classpath location as the file doing the importing, while messageSource.xml and themeSource.xml must be in a resources location below the location of the importing file. As you can see, a leading slash is ignored, but given that these paths are relative, it is better form not to use the slash at all. The contents of the files being imported, including the top level <beans/> element, must be valid XML bean definitions according to the Spring Schema.
+在上面的例子中,外部的bean定义从3个外部文件中进行加载:services.xml,messageSource.xml和themeSource.xml。所有的位置路径都是相对路径,所以service.xml必须在和引用文件相同路径中或者是类路径下,而messageSource.xml和themeSource.xml必须是在位于引用文件下一级的resources路径下。正如你看到的, 前部的斜杠被忽略了,这是由于路径都是相对路径,最好就不用斜线。文件的内容会被引入,包括顶级的<beans/>元素,根据Spring的Schema或DTD，它必须是有效bean定义的XML文件。
+
+
 
 [Note]
-It is possible, but not recommended, to reference files in parent directories using a relative "../" path. Doing so creates a dependency on a file that is outside the current application. In particular, this reference is not recommended for "classpath:" URLs (for example, "classpath:../services.xml"), where the runtime resolution process chooses the "nearest" classpath root and then looks into its parent directory. Classpath configuration changes may lead to the choice of a different, incorrect directory.
-You can always use fully qualified resource locations instead of relative paths: for example, "file:C:/config/services.xml" or "classpath:/config/services.xml". However, be aware that you are coupling your application’s configuration to specific absolute locations. It is generally preferable to keep an indirection for such absolute locations, for example, through "${…​}" placeholders that are resolved against JVM system properties at runtime.
+It is possible, but not recommended, to reference files in parent directories using a relative "../" path.
+Doing so creates a dependency on a file that is outside the current application.
+In particular, this reference is not recommended for "classpath:" URLs (for example, "classpath:../services.xml"),
+where the runtime resolution process chooses the "nearest" classpath root and then looks into its parent directory.
+Classpath configuration changes may lead to the choice of a different, incorrect directory.
+You can always use fully qualified resource locations instead of relative paths: for example,
+"file:C:/config/services.xml" or "classpath:/config/services.xml".
+However, be aware that you are coupling your application’s configuration to specific absolute locations.
+It is generally preferable to keep an indirection for such absolute locations,
+for example, through "${…​}" placeholders that are resolved against JVM system properties at runtime.
+
+注意
+在父目录中使用相对路径“../”来引用文件,这是可以实现的,但是不推荐这么做。
+
 
 6.2.3 Using the container
 
