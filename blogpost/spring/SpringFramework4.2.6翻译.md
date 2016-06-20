@@ -990,43 +990,43 @@ and may lead to concurrent access exceptions and/or inconsistent state in the be
 当然你也可以不给bean提供name或id。如果没有明确的定义bean的id或者name属性,容器会为bean生成一个唯一标识。然而,如果你想通过name来引用一个bean,可以使用ref元素或者定位服务方式来获取,你必须提供一个name属性。Motivations for not supplying a name are related to using inner beans and autowiring collaborators.
 
 
-> **bean的命名约定**
-> 该约定是用于当命名bean时,对实例字段名称的标准Java约定。也就是说,bean的名称以小写字母开始,后面是驼峰形式的。这样的命名可以是(没有引号)‘accountManager’,‘accountService’,‘userDao’,‘loginController’等。
-> bean的命名约定能够让你的bean配置更易读和理解,如果你使用Spring的AOP,当应用通知到一组相关名称的bean时,它会给你很大的帮助。
+> **bean的命名约定** 该约定是用于当命名bean时,对实例字段名称的标准Java约定。也就是说,bean的名称以小写字母开始,后面是驼峰形式的。这样的命名可以是(没有引号)‘accountManager’,‘accountService’,‘userDao’,‘loginController’等。bean的命名约定能够让你的bean配置更易读和理解,如果你使用Spring的AOP,当应用通知到一组相关名称的bean时,它会给你很大的帮助。
 
 
 
 
-**Aliasing a bean outside the bean definition**
+**在bean定义外面起别名**
+对于bean定义的本身,你可以为bean提供多个名称,使用一个由id属性或name属性中的任意名称数指定的名称组合。这些名称对于同一个bean来说都是相等的别名,在一些情况下,这是很有用的,比如在应用程序中允许每个组件参考一个共同的依赖,可以使用为组件本身指定的bean的名称。
 
-In a bean definition itself, you can supply more than one name for the bean, by using a combination of up to one name specified by the id attribute, and any number of other names in the name attribute. These names can be equivalent aliases to the same bean, and are useful for some situations, such as allowing each component in an application to refer to a common dependency by using a bean name that is specific to that component itself.
+然而,在bean定义时指定所有的别名是不够的,有时可能想在任意位置为一个bean引入一个别名。这在大型系统中是很常见的例子,其中的配置信息是分在每个子系统中的,每个子系统都有它自己的对象定义集合。在基于XML配置元数据中,可以使用<alias/>元素来实现这个功能。
 
-Specifying all aliases where the bean is actually defined is not always adequate, however. It is sometimes desirable to introduce an alias for a bean that is defined elsewhere. This is commonly the case in large systems where configuration is split amongst each subsystem, each subsystem having its own set of object definitions. In XML-based configuration metadata, you can use the <alias/> element to accomplish this.
 
 ```java
 <alias name="fromName" alias="toName"/>
 ```
-In this case, a bean in the same container which is named fromName, may also, after the use of this alias definition, be referred to as toName.
+在这个示例中,在相同容器中的名称为fromName的bean,在使用过这个别名定义后,也可以使用toName来引用。
 
-For example, the configuration metadata for subsystem A may refer to a DataSource via the name subsystemA-dataSource. The configuration metadata for subsystem B may refer to a DataSource via the name subsystemB-dataSource. When composing the main application that uses both these subsystems the main application refers to the DataSource via the name myApp-dataSource. To have all three names refer to the same object you add to the MyApp configuration metadata the following aliases definitions:
+例如,在子系统的配置元数据中,子系统A可能要通过名称‘subsystemA-dataSource’来指向数据源。子系统B的配置元数据可能要通过名称‘subsystemB-dataSource’来指向数据源。当处理使用了这两个子系统的主程序时,主程序要通过名称‘myApp-dataSource’来指向数据源。那么就需要三个名称指向同一个对象，那么就要按照下面的别名定义来进行添加MyApp的配置元数据:
 ```java
 <alias name="subsystemA-dataSource" alias="subsystemB-dataSource"/>
 <alias name="subsystemA-dataSource" alias="myApp-dataSource" />
 ```
-
-Now each component and the main application can refer to the dataSource through a name that is unique and guaranteed not to clash with any other definition (effectively creating a namespace), yet they refer to the same bean.
+现在每个组件和主程序都可以通过一个唯一的保证不冲突的名称来还有其它任意定义(更有效地是创建命名空间)来引用据源了,当然它们引用的是同一个bean。
 
 ```java
-Java-configuration
-
-If you are using Java-configuration, the @Bean annotation can be used to provide aliases see Section 6.12.3, “Using the @Bean annotation” for details.
+**Java配置** 如果使用Java配置,@Bean注解可以用来提供别名,详情请参考6.12.3节,"使用@Bean注解"
 ```
+#### 6.3.2初始化bean
 
-6.3.2 Instantiating beans
+A bean definition essentially is a recipe for creating one or more objects.
+The container looks at the recipe for a named bean when asked, and uses the configuration metadata encapsulated by that bean definition to create (or acquire) an actual object.
 
-A bean definition essentially is a recipe for creating one or more objects. The container looks at the recipe for a named bean when asked, and uses the configuration metadata encapsulated by that bean definition to create (or acquire) an actual object.
 
-If you use XML-based configuration metadata, you specify the type (or class) of object that is to be instantiated in the class attribute of the <bean/> element. This class attribute, which internally is a Class property on a BeanDefinition instance, is usually mandatory. (For exceptions, see the section called “Instantiation using an instance factory method” and Section 6.7, “Bean definition inheritance”.) You use the Class property in one of two ways:
+
+If you use XML-based configuration metadata, you specify the type (or class) of object that is to be instantiated in the class attribute of the <bean/> element.
+This class attribute, which internally is a Class property on a BeanDefinition instance, is usually mandatory.
+(For exceptions, see the section called “Instantiation using an instance factory method” and Section 6.7, “Bean definition inheritance”.)
+You use the Class property in one of two ways:
 
 - Typically, to specify the bean class to be constructed in the case where the container itself directly creates the bean by calling its constructor reflectively, somewhat equivalent to Java code using the new operator.
 - To specify the actual class containing the static factory method that will be invoked to create the object, in the less common case where the container invokes a static factory method on a class to create the bean. The object type returned from the invocation of the static factory method may be the same class or another class entirely.
