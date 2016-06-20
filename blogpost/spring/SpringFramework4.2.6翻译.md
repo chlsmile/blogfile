@@ -930,11 +930,9 @@ After you learn about Spring’s IoC container, you may want to know more about 
 
 
 #### 6.2.3使用容器
-
 ApplicationContext用来维护不同的bean和bean之间依赖关系,bean的注册的高级工厂接口。使用T getBean(String name, Class<T> requiredType)方法你可以获取bean的实例。
 
 ApplicationContext允许你读取bean并且访问它们,如下所示:
-
 ```java
 // 创建并配置beans
 ApplicationContext context =
@@ -974,30 +972,32 @@ lazy-initialization mode | 6.4.4节, “初始化加载bean”
 initialization method | the section called “Initialization callbacks”
 destruction method | the section called “Destruction callbacks”
 
-In addition to bean definitions that contain information on how to create a specific bean,
-the ApplicationContext implementations also permit the registration of existing objects that are created outside the container, by users.
-This is done by accessing the ApplicationContext’s BeanFactory via the method getBeanFactory() which returns the BeanFactory implementation DefaultListableBeanFactory.
-DefaultListableBeanFactory supports this registration through the methods registerSingleton(..) and registerBeanDefinition(..).
-However, typical applications work solely with beans defined through metadata bean definitions.
+此外,bean的定义还包含如何创建特定bean的信息,ApplicationContext的实现类允许用户对容器外部创建的已有对象进行注册。这可以通过getBeanFactory()方法访问ApplicationContext的BeanFactory来完成,它会返回BeanFactory的实现类DefaultListableBeanFactory。DefaultListableBeanFactory通过registerSingleton(..)和registerBeanDefinition(..)方法来支持这种注册。而典型的应用程序只和通过元数据定义的bean来工作。
 
 [Note]
-Bean metadata and manually supplied singleton instances need to be registered as early as possible, in order for the container to properly reason about them during autowiring and other introspection steps. While overriding of existing metadata and existing singleton instances is supported to some degree, the registration of new beans at runtime (concurrently with live access to factory) is not officially supported and may lead to concurrent access exceptions and/or inconsistent state in the bean container.
+Bean metadata and manually supplied singleton instances need to be registered as early as possible,
+in order for the container to properly reason about them during autowiring and other introspection steps.
+While overriding of existing metadata and existing singleton instances is supported to some degree,
+the registration of new beans at runtime (concurrently with live access to factory) is not officially supported
+and may lead to concurrent access exceptions and/or inconsistent state in the bean container.
 
 
-6.3.1 Naming beans
+#### 6.3.1命名bean
+每个bean都有一个或者多个身份标示。这些标识符必须在托管bean的容器内唯一。bean通常只有一个身份标识,但如果它需要多个的话,其它的可以被认为是别名。
 
-Every bean has one or more identifiers. These identifiers must be unique within the container that hosts the bean. A bean usually has only one identifier, but if it requires more than one, the extra ones can be considered aliases.
+在基于XML配置元数据中,使用id或者name属性类指定bean的身份标识。id属性允许你指定一个确切的id。通常这些名称是字符('myBean', 'fooService', 等),但也可能包含特殊字符。如果你想为bean引入别名,你也可以在name属性中来指定,通过逗号(,),分号(;)或空格来分隔。在Spring 3.1版之前,id属性是xsd:ID类型,只限定为字符。在3.1版本中，现在是xsd:string类型了。要注意bean的id的唯一性还是被容器所强制的,但是对于XML处理器却不是。
 
-In XML-based configuration metadata, you use the id and/or name attributes to specify the bean identifier(s). The id attribute allows you to specify exactly one id. Conventionally these names are alphanumeric ('myBean', 'fooService', etc.), but may contain special characters as well. If you want to introduce other aliases to the bean, you can also specify them in the name attribute, separated by a comma (,), semicolon (;), or white space. As a historical note, in versions prior to Spring 3.1, the id attribute was defined as an xsd:ID type, which constrained possible characters. As of 3.1, it is defined as an xsd:string type. Note that bean id uniqueness is still enforced by the container, though no longer by XML parsers.
+当然你也可以不给bean提供name或id。如果没有明确的定义bean的id或者name属性,容器会为bean生成一个唯一标识。然而,如果你想通过name来引用一个bean,可以使用ref元素或者定位服务方式来获取,你必须提供一个name属性。Motivations for not supplying a name are related to using inner beans and autowiring collaborators.
 
-You are not required to supply a name or id for a bean. If no name or id is supplied explicitly, the container generates a unique name for that bean. However, if you want to refer to that bean by name, through the use of the ref element or Service Locator style lookup, you must provide a name. Motivations for not supplying a name are related to using inner beans and autowiring collaborators.
-> Bean Naming Conventions
 
-  The convention is to use the standard Java convention for instance field names when naming beans. That is, bean names start with a lowercase letter, and are camel-cased from then on. Examples of such names would be (without quotes) 'accountManager', 'accountService', 'userDao', 'loginController', and so forth.
+> **bean的命名约定**
+> 该约定是用于当命名bean时,对实例字段名称的标准Java约定。也就是说,bean的名称以小写字母开始,后面是驼峰形式的。这样的命名可以是(没有引号)‘accountManager’,‘accountService’,‘userDao’,‘loginController’等。
+> bean的命名约定能够让你的bean配置更易读和理解,如果你使用Spring的AOP,当应用通知到一组相关名称的bean时,它会给你很大的帮助。
 
-  Naming beans consistently makes your configuration easier to read and understand, and if you are using Spring AOP it helps a lot when applying advice to a set of beans related by name.
 
-Aliasing a bean outside the bean definition
+
+
+**Aliasing a bean outside the bean definition**
 
 In a bean definition itself, you can supply more than one name for the bean, by using a combination of up to one name specified by the id attribute, and any number of other names in the name attribute. These names can be equivalent aliases to the same bean, and are useful for some situations, such as allowing each component in an application to refer to a common dependency by using a bean name that is specific to that component itself.
 
