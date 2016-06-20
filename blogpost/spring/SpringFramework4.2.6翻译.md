@@ -925,72 +925,60 @@ After you learn about Spring’s IoC container, you may want to know more about 
 ```
 在上面的例子中,外部的bean定义从3个外部文件中进行加载:services.xml,messageSource.xml和themeSource.xml。所有的位置路径都是相对路径,所以service.xml必须在和引用文件相同路径中或者是类路径下,而messageSource.xml和themeSource.xml必须是在位于引用文件下一级的resources路径下。正如你看到的, 前部的斜杠被忽略了,这是由于路径都是相对路径,最好就不用斜线。文件的内容会被引入,包括顶级的<beans/>元素,根据Spring的Schema或DTD，它必须是有效bean定义的XML文件。
 
-
-
-[Note]
-It is possible, but not recommended, to reference files in parent directories using a relative "../" path.
-Doing so creates a dependency on a file that is outside the current application.
-In particular, this reference is not recommended for "classpath:" URLs (for example, "classpath:../services.xml"),
-where the runtime resolution process chooses the "nearest" classpath root and then looks into its parent directory.
-Classpath configuration changes may lead to the choice of a different, incorrect directory.
-You can always use fully qualified resource locations instead of relative paths: for example,
-"file:C:/config/services.xml" or "classpath:/config/services.xml".
-However, be aware that you are coupling your application’s configuration to specific absolute locations.
-It is generally preferable to keep an indirection for such absolute locations,
-for example, through "${…​}" placeholders that are resolved against JVM system properties at runtime.
-
 > **注意** 在父目录中使用相对路径“../”来引用文件,这是可以实现的,但是不推荐这么做。如果这样做了会导致创建一个当前应用程序外的一个依赖。尤其是,这种引用对于“classpath:”的URL（例如,“classpath:../service.xml”）是不推荐的,\运行时的解析过程会选择“最近的”类路径根目录并且会查看它的父目录。类路径配置的修改可能会导致去选择一个不同的,不正确的目录。你也可以使用资源位置的完全限定名来代替相对路径:比如,“file:C:/config/services.xml”或“classpath:/config/services.xml”。这样的话,要注意你会耦合应用程序的配置到指定的绝对路径。对于绝对路径，一般最好是保持一个间接的使用,比如通过占位符“${...}”,这会基于运行时环境的JVM系统属性来解决。
 
 
 
+#### 6.2.3使用容器
 
+ApplicationContext用来维护不同的bean和bean之间依赖关系,bean的注册的高级工厂接口。使用T getBean(String name, Class<T> requiredType)方法你可以获取bean的实例。
 
-6.2.3 Using the container
-
-The ApplicationContext is the interface for an advanced factory capable of maintaining a registry of different beans and their dependencies. Using the method T getBean(String name, Class<T> requiredType) you can retrieve instances of your beans.
-
-The ApplicationContext enables you to read bean definitions and access them as follows:
+ApplicationContext允许你读取bean并且访问它们,如下所示:
 
 ```java
-// create and configure beans
+// 创建并配置beans
 ApplicationContext context =
     new ClassPathXmlApplicationContext(new String[] {"services.xml", "daos.xml"});
 
-// retrieve configured instance
+// 获取配置的实列
 PetStoreService service = context.getBean("petStore", PetStoreService.class);
 
-// use configured instance
+// 使用配置的实例子
 List<String> userList = service.getUsernameList();
 
 ```
-You use getBean() to retrieve instances of your beans. The ApplicationContext interface has a few other methods for retrieving beans, but ideally your application code should never use them. Indeed, your application code should have no calls to the getBean() method at all, and thus no dependency on Spring APIs at all. For example, Spring’s integration with web frameworks provides for dependency injection for various web framework classes such as controllers and JSF-managed beans.
+使用getBean()方法来获取beans的实例。ApplicationContext接口有一些其它的方法来获取实例,但最好在应用中别使用它们。事实上,应用程序代码应该没有getBean()方法的调用,那么就没有对Spring API的依赖了。例如,Spring和Web框架整合时,提供了对各种Web框架类库的依赖注入,例如控制器和JSF管理的beans。
 
-6.3 Bean overview
+#### 6.3 Bean 概述
 
-A Spring IoC container manages one or more beans. These beans are created with the configuration metadata that you supply to the container, for example, in the form of XML <bean/> definitions.
-Within the container itself, these bean definitions are represented as BeanDefinition objects, which contain (among other information) the following metadata:
-- A package-qualified class name: typically the actual implementation class of the bean being defined.
-- Bean behavioral configuration elements, which state how the bean should behave in the container (scope, lifecycle callbacks, and so forth).
-- References to other beans that are needed for the bean to do its work; these references are also called collaborators or dependencies.
-- Other configuration settings to set in the newly created object, for example, the number of connections to use in a bean that manages a connection pool, or the size limit of the pool.
+Spring的IoC容器管理一个或者多个bean。这些bean通过提供给容器的配置元数据被创建出来,例如,在XML中的<bean/>定义的形式。
+在容器内部，这些bean代表了BeanDefinition对象，它们包含(包括其它信息)下列元数据:
+- 包的类限定名:就是这些bean的真正实现类。
+- bean的行为配置元素,这表示了bean在容器中(范围,生命周期回调等等)应该是怎样的行为。
+- 对其它bean的引用,通常是bean正常工作所需要的;这些引用通常被称为合作者或依赖。
+- 在新被创建的对象中的其它配置设置,例如,管理连接池的bean中使用的连接数或连接池限制的大小。
 
-This metadata translates to a set of properties that make up each bean definition.
+数据翻译成一组属性集合来构成每一个bean的定义。
 
-Table 6.1. The bean definition
+表6.1.bean定义
 
 Property | Explained in…​
 ------------ | -------------
-class | Section 6.3.2, “Instantiating beans”
-name | Section 6.3.1, “Naming beans”
-scope | Section 6.5, “Bean scopes”
-constructor arguments | Section 6.4.1, “Dependency Injection”
-properties | Section 6.4.1, “Dependency Injection”
-autowiring mode | Section 6.4.5, “Autowiring collaborators”
-lazy-initialization mode | Section 6.4.4, “Lazy-initialized beans”
+class | 6.3.2节, “初始化bean”
+name | 6.3.1节, “命名bean”
+scope | 6.5节, “bean的范围”
+constructor arguments | 6.4.1节, “依赖注入”
+properties | 6.4.1节, “依赖注入”
+autowiring mode | 6.4.5节, “装配合作者”
+lazy-initialization mode | 6.4.4节, “初始化加载bean”
 initialization method | the section called “Initialization callbacks”
 destruction method | the section called “Destruction callbacks”
 
-In addition to bean definitions that contain information on how to create a specific bean, the ApplicationContext implementations also permit the registration of existing objects that are created outside the container, by users. This is done by accessing the ApplicationContext’s BeanFactory via the method getBeanFactory() which returns the BeanFactory implementation DefaultListableBeanFactory. DefaultListableBeanFactory supports this registration through the methods registerSingleton(..) and registerBeanDefinition(..). However, typical applications work solely with beans defined through metadata bean definitions.
+In addition to bean definitions that contain information on how to create a specific bean,
+the ApplicationContext implementations also permit the registration of existing objects that are created outside the container, by users.
+This is done by accessing the ApplicationContext’s BeanFactory via the method getBeanFactory() which returns the BeanFactory implementation DefaultListableBeanFactory.
+DefaultListableBeanFactory supports this registration through the methods registerSingleton(..) and registerBeanDefinition(..).
+However, typical applications work solely with beans defined through metadata bean definitions.
 
 [Note]
 Bean metadata and manually supplied singleton instances need to be registered as early as possible, in order for the container to properly reason about them during autowiring and other introspection steps. While overriding of existing metadata and existing singleton instances is supported to some degree, the registration of new beans at runtime (concurrently with live access to factory) is not officially supported and may lead to concurrent access exceptions and/or inconsistent state in the bean container.
