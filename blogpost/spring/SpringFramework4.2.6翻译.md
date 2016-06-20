@@ -939,8 +939,10 @@ However, be aware that you are coupling your application’s configuration to sp
 It is generally preferable to keep an indirection for such absolute locations,
 for example, through "${…​}" placeholders that are resolved against JVM system properties at runtime.
 
-注意
-在父目录中使用相对路径“../”来引用文件,这是可以实现的,但是不推荐这么做。
+> **注意** 在父目录中使用相对路径“../”来引用文件,这是可以实现的,但是不推荐这么做。如果这样做了会导致创建一个当前应用程序外的一个依赖。尤其是,这种引用对于“classpath:”的URL（例如,“classpath:../service.xml”）是不推荐的,\运行时的解析过程会选择“最近的”类路径根目录并且会查看它的父目录。类路径配置的修改可能会导致去选择一个不同的,不正确的目录。你也可以使用资源位置的完全限定名来代替相对路径:比如,“file:C:/config/services.xml”或“classpath:/config/services.xml”。这样的话,要注意你会耦合应用程序的配置到指定的绝对路径。对于绝对路径，一般最好是保持一个间接的使用,比如通过占位符“${...}”,这会基于运行时环境的JVM系统属性来解决。
+
+
+
 
 
 6.2.3 Using the container
