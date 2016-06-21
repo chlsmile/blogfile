@@ -1016,17 +1016,15 @@ and may lead to concurrent access exceptions and/or inconsistent state in the be
 ```java
 **Java配置** 如果使用Java配置,@Bean注解可以用来提供别名,详情请参考6.12.3节,"使用@Bean注解"
 ```
-#### 6.3.2初始化bean
+#### 6.3.2实例化bean
 
-A bean definition essentially is a recipe for creating one or more objects.
-The container looks at the recipe for a named bean when asked, and uses the configuration metadata encapsulated by that bean definition to create (or acquire) an actual object.
-
-
+bean的定义本质上是创建一个或者多个对象的模版。当需要一个bean时,容器查找相应bean的模板,并使用bean定义的配置元数据来创建(或者是获取)一个真实的对象。
 
 If you use XML-based configuration metadata, you specify the type (or class) of object that is to be instantiated in the class attribute of the <bean/> element.
 This class attribute, which internally is a Class property on a BeanDefinition instance, is usually mandatory.
 (For exceptions, see the section called “Instantiation using an instance factory method” and Section 6.7, “Bean definition inheritance”.)
 You use the Class property in one of two ways:
+
 
 - Typically, to specify the bean class to be constructed in the case where the container itself directly creates the bean by calling its constructor reflectively, somewhat equivalent to Java code using the new operator.
 - To specify the actual class containing the static factory method that will be invoked to create the object, in the less common case where the container invokes a static factory method on a class to create the bean. The object type returned from the invocation of the static factory method may be the same class or another class entirely.
@@ -1041,27 +1039,27 @@ com.example.Foo$Bar
 Notice the use of the $ character in the name to separate the nested class name from the outer class name.
 ```
 
-Instantiation with a constructor
+**通过构造方法进行实例化**
 
-When you create a bean by the constructor approach, all normal classes are usable by and compatible with Spring. That is, the class being developed does not need to implement any specific interfaces or to be coded in a specific fashion. Simply specifying the bean class should suffice. However, depending on what type of IoC you use for that specific bean, you may need a default (empty) constructor.
+当通过构造方法创建bean时,所有普通的类的使用都和Spring兼容。开发中的bean不需要实现任何特定的接口或以特定的方式来编码。仅简单指定bean的类就足够了。但基于你使用的是什么类型的IoC,可能需要一个默认(空的)构造方法。
 
-The Spring IoC container can manage virtually any class you want it to manage; it is not limited to managing true JavaBeans. Most Spring users prefer actual JavaBeans with only a default (no-argument) constructor and appropriate setters and getters modeled after the properties in the container. You can also have more exotic non-bean-style classes in your container. If, for example, you need to use a legacy connection pool that absolutely does not adhere to the JavaBean specification, Spring can manage it as well.
+Spring的IoC容器几乎可以管理任意的你想让它管理的类;而不仅仅限于管理真正的JavaBean。很多Spring用户喜欢在容器中使用有默认(无参数)构造方法和在其后有适当setter和getter方法的真正JavaBean。你也可以在容器中使用很多异样的,非bean样式的类。例如,需要使用遗留的连接池,但是它没有符合JavaBean的规范,Spring也照样能管理它。
 
-With XML-based configuration metadata you can specify your bean class as follows:
+基于XML的配置元数据,你可以如下来定义bean:
 
 ```java
 <bean id="exampleBean" class="examples.ExampleBean"/>
 
 <bean name="anotherExample" class="examples.ExampleBeanTwo"/>
 ```
-For details about the mechanism for supplying arguments to the constructor (if required) and setting object instance properties after the object is constructed, see Injecting Dependencies.
+关于提供构造方法参数(如果需要)和在对象被构造后,设置对象实例属性机制的详情,请参考节依赖注入。
 
-Instantiation with a static factory method
 
-When defining a bean that you create with a static factory method, you use the class attribute to specify the class containing the static factory method and an attribute named factory-method to specify the name of the factory method itself. You should be able to call this method (with optional arguments as described later) and return a live object, which subsequently is treated as if it had been created through a constructor. One use for such a bean definition is to call static factories in legacy code.
+**通过静态构造方法初始化bean**
 
-The following bean definition specifies that the bean will be created by calling a factory-method. The definition does not specify the type (class) of the returned object, only the class containing the factory method. In this example, the createInstance() method must be a static method.
+当使用静态工厂方法来定义bean的时候,可以使用class属性来指定包含static工厂方法的类,而名为factory-method的属性来指定静态方法,你应该调用这个方法(还可以有可选的参数)并返回一个实际的对象,随后将它视为是通过构造方法创建的一样。在旧的程序中,这样定义bean的使用方式之一是调用static工厂。
 
+下面bean的定义指定了要通过调用工厂方法生成bean。这个定义没有指定返回对象的类型(类),仅仅是包含工厂方法的类。在本例中,createInstance()方法必须是静态方法。
 ```java
 <bean id="clientService"
     class="examples.ClientService"
@@ -1078,11 +1076,11 @@ public class ClientService {
 }
 ```
 
-For details about the mechanism for supplying (optional) arguments to the factory method and setting object instance properties after the object is returned from the factory, see Dependencies and configuration in detail.
+关于提供(可选的)参数到工厂方法并在对象由工厂返回后设置对象实例属性的机制详情,请参考深入依赖和配置。
 
-Instantiation using an instance factory method
+**使用实例化工厂方法来创建bean**
 
-Similar to instantiation through a static factory method, instantiation with an instance factory method invokes a non-static method of an existing bean from the container to create a new bean. To use this mechanism, leave the class attribute empty, and in the factory-bean attribute, specify the name of a bean in the current (or parent/ancestor) container that contains the instance method that is to be invoked to create the object. Set the name of the factory method itself with the factory-method attribute.
+与静态工厂方法相类似,使用实例工厂方法实例化是要调用容器中已有bean的一个非静态的方法来创建新的bean。要使用这个机制,请把class属性留空,在factory-bean属性中指定当前(或父/祖先)容器中bean的名字,该bean要包含被调用来创建对象的实例方法。使用factory-method方法来设置工厂方法的名称。
 
 ```java
 <!-- the factory bean, which contains a method called createInstance() -->
@@ -1108,7 +1106,7 @@ public class DefaultServiceLocator {
 }
 ```
 
-One factory class can also hold more than one factory method as shown here:
+一个工厂类也可以有多于一个工厂方法，比如下面这个:
 
 ```java
 <bean id="serviceLocator" class="examples.DefaultServiceLocator">
@@ -1141,26 +1139,42 @@ public class DefaultServiceLocator {
 
 }
 ```
+这个方法展示了工厂bean本身可以通过依赖注入（DI）被管理和配置。请参考节深入依赖和配置。
 
-This approach shows that the factory bean itself can be managed and configured through dependency injection (DI). See Dependencies and configuration in detail.
+> **注意** 在Spring文档中,在Spring文档中,工厂bean指的是在Spring容器中配置的bean,可以通过实例或静态工厂方法来创建对象。与此相反的是,FactoryBean(注意大小写)指的是Spring特定的FactoryBean。
 
-[Note]
-In Spring documentation, factory bean refers to a bean that is configured in the Spring container that will create objects through an instance or static factory method. By contrast, FactoryBean (notice the capitalization) refers to a Spring-specific FactoryBean.
+####6.4依赖
 
-6.4 Dependencies
-A typical enterprise application does not consist of a single object (or bean in the Spring parlance). Even the simplest application has a few objects that work together to present what the end-user sees as a coherent application. This next section explains how you go from defining a number of bean definitions that stand alone to a fully realized application where objects collaborate to achieve a goal.
+即便最简单的应用程序也有一些对象协同工作来呈现出用户终端所看到的功能。下一节会解释如何为应用程序定义一组独立的bean,与对象间如何相互协。
 
-6.4.1 Dependency Injection
+#### 6.4.1依赖注入
 
-Dependency injection (DI) is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method. The container then injects those dependencies when it creates the bean. This process is fundamentally the inverse, hence the name Inversion of Control (IoC), of the bean itself controlling the instantiation or location of its dependencies on its own by using direct construction of classes, or the Service Locator pattern.
+Dependency injection (DI) is a process whereby objects define their dependencies,
+that is, the other objects they work with, only through constructor arguments, arguments to a factory method,
+or properties that are set on the object instance after it is constructed or returned from a factory method.
+The container then injects those dependencies when it creates the bean.
+This process is fundamentally the inverse,
+hence the name Inversion of Control (IoC),
+of the bean itself controlling the instantiation or location of its dependencies on its own by using direct construction of classes,
+or the Service Locator pattern.
 
-Code is cleaner with the DI principle and decoupling is more effective when objects are provided with their dependencies. The object does not look up its dependencies, and does not know the location or class of the dependencies. As such, your classes become easier to test, in particular when the dependencies are on interfaces or abstract base classes, which allow for stub or mock implementations to be used in unit tests.
+
+Code is cleaner with the DI principle and decoupling is more effective when objects are provided with their dependencies.
+The object does not look up its dependencies, and does not know the location or class of the dependencies.
+As such, your classes become easier to test, in particular when the dependencies are on interfaces or abstract base classes,
+which allow for stub or mock implementations to be used in unit tests.
+
+
 
 DI exists in two major variants, Constructor-based dependency injection and Setter-based dependency injection.
 
 Constructor-based dependency injection
 
-Constructor-based DI is accomplished by the container invoking a constructor with a number of arguments, each representing a dependency. Calling a static factory method with specific arguments to construct the bean is nearly equivalent, and this discussion treats arguments to a constructor and to a static factory method similarly. The following example shows a class that can only be dependency-injected with constructor injection. Notice that there is nothing special about this class, it is a POJO that has no dependencies on container specific interfaces, base classes or annotations.
+Constructor-based DI is accomplished by the container invoking a constructor with a number of arguments, each representing a dependency.
+Calling a static factory method with specific arguments to construct the bean is nearly equivalent,
+and this discussion treats arguments to a constructor and to a static factory method similarly.
+The following example shows a class that can only be dependency-injected with constructor injection.
+Notice that there is nothing special about this class, it is a POJO that has no dependencies on container specific interfaces, base classes or annotations.
 
 ```java
 public class SimpleMovieLister {
@@ -1180,7 +1194,9 @@ public class SimpleMovieLister {
 
 Constructor argument resolution
 
-Constructor argument resolution matching occurs using the argument’s type. If no potential ambiguity exists in the constructor arguments of a bean definition, then the order in which the constructor arguments are defined in a bean definition is the order in which those arguments are supplied to the appropriate constructor when the bean is being instantiated. Consider the following class:
+Constructor argument resolution matching occurs using the argument’s type.
+If no potential ambiguity exists in the constructor arguments of a bean definition,
+then the order in which the constructor arguments are defined in a bean definition is the order in which those arguments are supplied to the appropriate constructor when the bean is being instantiated. Consider the following class:
 
 ```java
 package x.y;
@@ -1193,7 +1209,9 @@ public class Foo {
 
 }
 ```
-No potential ambiguity exists, assuming that Bar and Baz classes are not related by inheritance. Thus the following configuration works fine, and you do not need to specify the constructor argument indexes and/or types explicitly in the <constructor-arg/> element.
+No potential ambiguity exists, assuming that Bar and Baz classes are not related by inheritance.
+Thus the following configuration works fine, and you do not need to specify the constructor argument indexes and/or types explicitly in the <constructor-arg/> element.
+
 ```java
 <beans>
     <bean id="foo" class="x.y.Foo">
@@ -1206,7 +1224,9 @@ No potential ambiguity exists, assuming that Bar and Baz classes are not related
     <bean id="baz" class="x.y.Baz"/>
 </beans>
 ```
-When another bean is referenced, the type is known, and matching can occur (as was the case with the preceding example). When a simple type is used, such as <value>true</value>, Spring cannot determine the type of the value, and so cannot match by type without help. Consider the following class:
+When another bean is referenced, the type is known, and matching can occur (as was the case with the preceding example).
+When a simple type is used, such as <value>true</value>, Spring cannot determine the type of the value, and so cannot match by type without help. Consider the following class:
+
 ```java
 package examples;
 
@@ -1249,7 +1269,9 @@ You can also use the constructor parameter name for value disambiguation:
 </bean>
 ```
 
-Keep in mind that to make this work out of the box your code must be compiled with the debug flag enabled so that Spring can look up the parameter name from the constructor. If you can’t compile your code with debug flag (or don’t want to) you can use @ConstructorProperties JDK annotation to explicitly name your constructor arguments. The sample class would then have to look as follows:
+Keep in mind that to make this work out of the box your code must be compiled with the debug flag enabled so that Spring can look up the parameter name from the constructor.
+If you can’t compile your code with debug flag (or don’t want to) you can use @ConstructorProperties JDK annotation to explicitly name your constructor arguments.
+The sample class would then have to look as follows:
 
 ```java
 package examples;
@@ -1271,7 +1293,9 @@ Setter-based dependency injection
 
 Setter-based DI is accomplished by the container calling setter methods on your beans after invoking a no-argument constructor or no-argument static factory method to instantiate your bean.
 
-The following example shows a class that can only be dependency-injected using pure setter injection. This class is conventional Java. It is a POJO that has no dependencies on container specific interfaces, base classes or annotations.
+The following example shows a class that can only be dependency-injected using pure setter injection.
+This class is conventional Java.
+It is a POJO that has no dependencies on container specific interfaces, base classes or annotations.
 
 ```java
 public class SimpleMovieLister {
@@ -1288,7 +1312,11 @@ public class SimpleMovieLister {
 
 }
 ```
-The ApplicationContext supports constructor-based and setter-based DI for the beans it manages. It also supports setter-based DI after some dependencies have already been injected through the constructor approach. You configure the dependencies in the form of a BeanDefinition, which you use in conjunction with PropertyEditor instances to convert properties from one format to another. However, most Spring users do not work with these classes directly (i.e., programmatically) but rather with XML bean definitions, annotated components (i.e., classes annotated with @Component, @Controller, etc.), or @Bean methods in Java-based @Configuration classes. These sources are then converted internally into instances of BeanDefinition and used to load an entire Spring IoC container instance.
+The ApplicationContext supports constructor-based and setter-based DI for the beans it manages.
+It also supports setter-based DI after some dependencies have already been injected through the constructor approach.
+You configure the dependencies in the form of a BeanDefinition, which you use in conjunction with PropertyEditor instances to convert properties from one format to another.
+However, most Spring users do not work with these classes directly (i.e., programmatically) but rather with XML bean definitions, annotated components (i.e., classes annotated with @Component, @Controller, etc.),
+or @Bean methods in Java-based @Configuration classes. These sources are then converted internally into instances of BeanDefinition and used to load an entire Spring IoC container instance.
 
 > Constructor-based or setter-based DI?
 
@@ -1309,7 +1337,12 @@ The container performs bean dependency resolution as follows:
 - Each property or constructor argument is an actual definition of the value to set, or a reference to another bean in the container.
 - Each property or constructor argument which is a value is converted from its specified format to the actual type of that property or constructor argument. By default Spring can convert a value supplied in string format to all built-in types, such as int, long, String, boolean, etc.
 
-The Spring container validates the configuration of each bean as the container is created. However, the bean properties themselves are not set until the bean is actually created. Beans that are singleton-scoped and set to be pre-instantiated (the default) are created when the container is created. Scopes are defined in Section 6.5, “Bean scopes”. Otherwise, the bean is created only when it is requested. Creation of a bean potentially causes a graph of beans to be created, as the bean’s dependencies and its dependencies' dependencies (and so on) are created and assigned. Note that resolution mismatches among those dependencies may show up late, i.e. on first creation of the affected bean.
+The Spring container validates the configuration of each bean as the container is created.
+However, the bean properties themselves are not set until the bean is actually created.
+Beans that are singleton-scoped and set to be pre-instantiated (the default) are created when the container is created.
+Scopes are defined in Section 6.5, “Bean scopes”. Otherwise, the bean is created only when it is requested.
+Creation of a bean potentially causes a graph of beans to be created, as the bean’s dependencies and its dependencies' dependencies (and so on) are created and assigned.
+Note that resolution mismatches among those dependencies may show up late, i.e. on first creation of the affected bean.
 
 > Circular dependencies
 
