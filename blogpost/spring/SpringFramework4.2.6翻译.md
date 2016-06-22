@@ -1149,50 +1149,34 @@ public class DefaultServiceLocator {
 
 #### 6.4.1依赖注入
 
-Dependency injection (DI) is a process whereby objects define their dependencies,
-that is, the other objects they work with, only through constructor arguments, arguments to a factory method,
-or properties that are set on the object instance after it is constructed or returned from a factory method.
-The container then injects those dependencies when it creates the bean.
-This process is fundamentally the inverse,
-hence the name Inversion of Control (IoC),
-of the bean itself controlling the instantiation or location of its dependencies on its own by using direct construction of classes,
-or the Service Locator pattern.
+依赖注入(DI)是对象定义他们依赖的过程,也就是说,要和他们协同工作的对象,只可以通过构造方法参数,或者工厂方法参数,或者是工厂方法返回的对象或被构造好后,为对象实例设置的属性。在创建bean的时候容器注入bean的这些依赖。这个过程从根本上来说是反向的,因此命名为控制反转(IoC),bean自身直接使用构造好的类或者服务定位器模式来控制实例或者它的依赖所在的位置。
+
+使用DI原则,代码就干净多了,当为对象提供它们依赖的时候,能够更有效的解耦。对象不需要关注它的依赖,也不需要知道依赖类的位置或依赖的类。因此,你的代码测试变得容易了,特别是当依赖是接口或抽象基类的时候,这允许在单元测试中使用stub或mock的实现类。
+
+DI存在两种主要的方式,基于构造方法的依赖注入和基于setter方法的依赖注入。
+
+**基于构造方法的依赖注入**
+
+基于构造方法的依赖注入是容器调用构造方法和一组参数完成的,每个参数都表示着一个依赖。使用特定的参数来调用静态工厂方法构造bean基本也是相同的,这种说法给构造方法的参数和给静态工厂方法的参数相类似。下面的示例展示了一个只能使用构造方法进行依赖注入的类。注意这个类没有什么特殊之处,就是一个POJO而且没有对容器特定接口,基类或注解的依赖。
 
 
-Code is cleaner with the DI principle and decoupling is more effective when objects are provided with their dependencies.
-The object does not look up its dependencies, and does not know the location or class of the dependencies.
-As such, your classes become easier to test, in particular when the dependencies are on interfaces or abstract base classes,
-which allow for stub or mock implementations to be used in unit tests.
-
-
-
-DI exists in two major variants, Constructor-based dependency injection and Setter-based dependency injection.
-
-Constructor-based dependency injection
-
-Constructor-based DI is accomplished by the container invoking a constructor with a number of arguments, each representing a dependency.
-Calling a static factory method with specific arguments to construct the bean is nearly equivalent,
-and this discussion treats arguments to a constructor and to a static factory method similarly.
-The following example shows a class that can only be dependency-injected with constructor injection.
-Notice that there is nothing special about this class, it is a POJO that has no dependencies on container specific interfaces, base classes or annotations.
 
 ```java
 public class SimpleMovieLister {
 
-    // the SimpleMovieLister has a dependency on a MovieFinder
+    // SimpleMovieLister 依赖 MovieFinder
     private MovieFinder movieFinder;
 
-    // a constructor so that the Spring container can inject a MovieFinder
+    // 这个构造方法Spring容器可以注入MovieFinder
     public SimpleMovieLister(MovieFinder movieFinder) {
         this.movieFinder = movieFinder;
     }
 
-    // business logic that actually uses the injected MovieFinder is omitted...
-
+    // 业务逻辑就可以使用注入的MovieFinder了,使用代码省略...
 }
 ```
 
-Constructor argument resolution
+**构造方法参数解析**
 
 Constructor argument resolution matching occurs using the argument’s type.
 If no potential ambiguity exists in the constructor arguments of a bean definition,
@@ -1289,7 +1273,7 @@ public class ExampleBean {
 }
 ```
 
-Setter-based dependency injection
+**基于Setter方法的依赖注入**
 
 Setter-based DI is accomplished by the container calling setter methods on your beans after invoking a no-argument constructor or no-argument static factory method to instantiate your bean.
 
