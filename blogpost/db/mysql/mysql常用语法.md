@@ -20,7 +20,9 @@ drop database test01;
 - 创建表
 ```mysql
 create table t_order (
-  id bigint(20) unsigned not null auto_increment comment '数据库主键,自增长'
+  id bigint(20) unsigned not null auto_increment comment '数据库主键,自增长',
+  create_time
+  update_time
   primary key(id)
 ) engine=InnoDB auto_increment=1 default charset=utf8 comment='订单表';
 ```
