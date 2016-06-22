@@ -36,5 +36,12 @@ create table t_order (
 - 修改表-删除字段
 ```mysql
 ```
+- 修改表-增加索引
+```mysql
+```
+
+- 修改表-删除索引
+```mysql
+```
 
 
