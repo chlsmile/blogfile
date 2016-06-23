@@ -3116,4 +3116,377 @@ The corresponding bean definitions appear as follows.
 </beans>
 ```
 #### 6.9.4 Fine-tuning annotation-based autowiring with qualifiers
+@Primary is an effective way to use autowiring by type with several instances when one primary candidate can be determined. When more control over the selection process is required, Spring’s @Qualifier annotation can be used. You can associate qualifier values with specific arguments, narrowing the set of type matches so that a specific bean is chosen for each argument. In the simplest case, this can be a plain descriptive value:
+```java
+public class MovieRecommender {
 
+    @Autowired
+    @Qualifier("main")
+    private MovieCatalog movieCatalog;
+
+    // ...
+
+}
+```
+The @Qualifier annotation can also be specified on individual constructor arguments or method parameters:
+```java
+public class MovieRecommender {
+
+    private MovieCatalog movieCatalog;
+
+    private CustomerPreferenceDao customerPreferenceDao;
+
+    @Autowired
+    public void prepare(@Qualifier("main")MovieCatalog movieCatalog,
+            CustomerPreferenceDao customerPreferenceDao) {
+        this.movieCatalog = movieCatalog;
+        this.customerPreferenceDao = customerPreferenceDao;
+    }
+
+    // ...
+
+}
+```
+The corresponding bean definitions appear as follows. The bean with qualifier value "main" is wired with the constructor argument that is qualified with the same value.
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="main"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier value="action"/>
+
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+```
+For a fallback match, the bean name is considered a default qualifier value. Thus you can define the bean with an id "main" instead of the nested qualifier element, leading to the same matching result. However, although you can use this convention to refer to specific beans by name, @Autowired is fundamentally about type-driven injection with optional semantic qualifiers. This means that qualifier values, even with the bean name fallback, always have narrowing semantics within the set of type matches; they do not semantically express a reference to a unique bean id. Good qualifier values are "main" or "EMEA" or "persistent", expressing characteristics of a specific component that are independent from the bean id, which may be auto-generated in case of an anonymous bean definition like the one in the preceding example.
+
+Qualifiers also apply to typed collections, as discussed above, for example, to Set<MovieCatalog>. In this case, all matching beans according to the declared qualifiers are injected as a collection. This implies that qualifiers do not have to be unique; they rather simply constitute filtering criteria. For example, you can define multiple MovieCatalog beans with the same qualifier value "action", all of which would be injected into a Set<MovieCatalog> annotated with @Qualifier("action").
+```java
+If you intend to express annotation-driven injection by name, do not primarily use @Autowired, even if is technically capable of referring to a bean name through @Qualifier values. Instead, use the JSR-250 @Resource annotation, which is semantically defined to identify a specific target component by its unique name, with the declared type being irrelevant for the matching process.
+As a specific consequence of this semantic difference, beans that are themselves defined as a collection or map type cannot be injected through @Autowired, because type matching is not properly applicable to them. Use @Resource for such beans, referring to the specific collection or map bean by unique name.
+@Autowired applies to fields, constructors, and multi-argument methods, allowing for narrowing through qualifier annotations at the parameter level. By contrast, @Resource is supported only for fields and bean property setter methods with a single argument. As a consequence, stick with qualifiers if your injection target is a constructor or a multi-argument method.
+```
+You can create your own custom qualifier annotations. Simply define an annotation and provide the @Qualifier annotation within your definition:
+```java
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface Genre {
+
+    String value();
+}
+```
+Then you can provide the custom qualifier on autowired fields and parameters:
+```java
+public class MovieRecommender {
+
+    @Autowired
+    @Genre("Action")
+    private MovieCatalog actionCatalog;
+    private MovieCatalog comedyCatalog;
+
+    @Autowired
+    public void setComedyCatalog(@Genre("Comedy") MovieCatalog comedyCatalog) {
+        this.comedyCatalog = comedyCatalog;
+    }
+
+    // ...
+
+}
+```
+Next, provide the information for the candidate bean definitions. You can add <qualifier/> tags as sub-elements of the <bean/> tag and then specify the type and value to match your custom qualifier annotations. The type is matched against the fully-qualified class name of the annotation. Or, as a convenience if no risk of conflicting names exists, you can use the short class name. Both approaches are demonstrated in the following example.
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier type="Genre" value="Action"/>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier type="example.Genre" value="Comedy"/>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean id="movieRecommender" class="example.MovieRecommender"/>
+
+</beans>
+```
+In Section 6.10, “Classpath scanning and managed components”, you will see an annotation-based alternative to providing the qualifier metadata in XML. Specifically, see Section 6.10.8, “Providing qualifier metadata with annotations”.
+
+In some cases, it may be sufficient to use an annotation without a value. This may be useful when the annotation serves a more generic purpose and can be applied across several different types of dependencies. For example, you may provide an offline catalog that would be searched when no Internet connection is available. First define the simple annotation:
+
+```java
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface Offline {
+
+}
+```
+Then add the annotation to the field or property to be autowired:
+```java
+public class MovieRecommender {
+
+    @Autowired
+    @Offline
+    private MovieCatalog offlineCatalog;
+
+    // ...
+
+}
+```
+Now the bean definition only needs a qualifier type:
+```java
+<bean class="example.SimpleMovieCatalog">
+    <qualifier type="Offline"/>
+    <!-- inject any dependencies required by this bean -->
+</bean>
+```
+You can also define custom qualifier annotations that accept named attributes in addition to or instead of the simple value attribute. If multiple attribute values are then specified on a field or parameter to be autowired, a bean definition must match all such attribute values to be considered an autowire candidate. As an example, consider the following annotation definition:
+```java
+@Target({ElementType.FIELD, ElementType.PARAMETER})
+@Retention(RetentionPolicy.RUNTIME)
+@Qualifier
+public @interface MovieQualifier {
+
+    String genre();
+
+    Format format();
+
+}
+```
+In this case Format is an enum:
+```java
+public enum Format {
+    VHS, DVD, BLURAY
+}
+```
+The fields to be autowired are annotated with the custom qualifier and include values for both attributes: genre and format.
+```java
+public class MovieRecommender {
+
+    @Autowired
+    @MovieQualifier(format=Format.VHS, genre="Action")
+    private MovieCatalog actionVhsCatalog;
+
+    @Autowired
+    @MovieQualifier(format=Format.VHS, genre="Comedy")
+    private MovieCatalog comedyVhsCatalog;
+
+    @Autowired
+    @MovieQualifier(format=Format.DVD, genre="Action")
+    private MovieCatalog actionDvdCatalog;
+
+    @Autowired
+    @MovieQualifier(format=Format.BLURAY, genre="Comedy")
+    private MovieCatalog comedyBluRayCatalog;
+
+    // ...
+
+}
+```
+Finally, the bean definitions should contain matching qualifier values. This example also demonstrates that bean meta attributes may be used instead of the <qualifier/> sub-elements. If available, the <qualifier/> and its attributes take precedence, but the autowiring mechanism falls back on the values provided within the <meta/> tags if no such qualifier is present, as in the last two bean definitions in the following example.
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:annotation-config/>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier type="MovieQualifier">
+            <attribute key="format" value="VHS"/>
+            <attribute key="genre" value="Action"/>
+        </qualifier>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <qualifier type="MovieQualifier">
+            <attribute key="format" value="VHS"/>
+            <attribute key="genre" value="Comedy"/>
+        </qualifier>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <meta key="format" value="DVD"/>
+        <meta key="genre" value="Action"/>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+    <bean class="example.SimpleMovieCatalog">
+        <meta key="format" value="BLURAY"/>
+        <meta key="genre" value="Comedy"/>
+        <!-- inject any dependencies required by this bean -->
+    </bean>
+
+</beans>
+```
+#### 6.9.5 Using generics as autowiring qualifiers
+In addition to the @Qualifier annotation, it is also possible to use Java generic types as an implicit form of qualification. For example, suppose you have the following configuration:
+```java
+@Configuration
+public class MyConfiguration {
+
+    @Bean
+    public StringStore stringStore() {
+        return new StringStore();
+    }
+
+    @Bean
+    public IntegerStore integerStore() {
+        return new IntegerStore();
+    }
+
+}
+```
+Assuming that beans above implement a generic interface, i.e. Store<String> and Store<Integer>, you can @Autowire the Store interface and the generic will be used as a qualifier:
+```java
+@Autowired
+private Store<String> s1; // <String> qualifier, injects the stringStore bean
+
+@Autowired
+private Store<Integer> s2; // <Integer> qualifier, injects the integerStore bean
+```
+Generic qualifiers also apply when autowiring Lists, Maps and Arrays:
+```java
+// Inject all Store beans as long as they have an <Integer> generic
+// Store<String> beans will not appear in this list
+@Autowired
+private List<Store<Integer>> s;
+```
+#### 6.9.6 CustomAutowireConfigurer
+
+The CustomAutowireConfigurer is a BeanFactoryPostProcessor that enables you to register your own custom qualifier annotation types even if they are not annotated with Spring’s @Qualifier annotation.
+```java
+<bean id="customAutowireConfigurer"
+        class="org.springframework.beans.factory.annotation.CustomAutowireConfigurer">
+    <property name="customQualifierTypes">
+        <set>
+            <value>example.CustomQualifier</value>
+        </set>
+    </property>
+</bean>
+```
+The AutowireCandidateResolver determines autowire candidates by:
+
+- the autowire-candidate value of each bean definition
+- any default-autowire-candidates pattern(s) available on the <beans/> element
+- the presence of @Qualifier annotations and any custom annotations registered with the CustomAutowireConfigurer
+
+When multiple beans qualify as autowire candidates, the determination of a "primary" is the following: if exactly one bean definition among the candidates has a primary attribute set to true, it will be selected.
+
+#### 6.9.7 @Resource
+
+Spring also supports injection using the JSR-250 @Resource annotation on fields or bean property setter methods. This is a common pattern in Java EE 5 and 6, for example in JSF 1.2 managed beans or JAX-WS 2.0 endpoints. Spring supports this pattern for Spring-managed objects as well.
+
+@Resource takes a name attribute, and by default Spring interprets that value as the bean name to be injected. In other words, it follows by-name semantics, as demonstrated in this example:
+
+```java
+public class SimpleMovieLister {
+
+    private MovieFinder movieFinder;
+
+    @Resource(name="myMovieFinder")
+    public void setMovieFinder(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+
+}
+```
+If no name is specified explicitly, the default name is derived from the field name or setter method. In case of a field, it takes the field name; in case of a setter method, it takes the bean property name. So the following example is going to have the bean with name "movieFinder" injected into its setter method:
+```java
+public class SimpleMovieLister {
+
+    private MovieFinder movieFinder;
+
+    @Resource
+    public void setMovieFinder(MovieFinder movieFinder) {
+        this.movieFinder = movieFinder;
+    }
+
+}
+```
+```java
+[Note]
+The name provided with the annotation is resolved as a bean name by the ApplicationContext of which the CommonAnnotationBeanPostProcessor is aware. The names can be resolved through JNDI if you configure Spring’s SimpleJndiBeanFactory explicitly. However, it is recommended that you rely on the default behavior and simply use Spring’s JNDI lookup capabilities to preserve the level of indirection.
+```
+
+In the exclusive case of @Resource usage with no explicit name specified, and similar to @Autowired, @Resource finds a primary type match instead of a specific named bean and resolves well-known resolvable dependencies: the BeanFactory, ApplicationContext, ResourceLoader, ApplicationEventPublisher, and MessageSource interfaces.
+
+Thus in the following example, the customerPreferenceDao field first looks for a bean named customerPreferenceDao, then falls back to a primary type match for the type CustomerPreferenceDao. The "context" field is injected based on the known resolvable dependency type ApplicationContext.
+```java
+public class MovieRecommender {
+
+    @Resource
+    private CustomerPreferenceDao customerPreferenceDao;
+
+    @Resource
+    private ApplicationContext context;
+
+    public MovieRecommender() {
+    }
+
+    // ...
+
+}
+```
+#### 6.9.8 @PostConstruct and @PreDestroy
+
+The CommonAnnotationBeanPostProcessor not only recognizes the @Resource annotation but also the JSR-250 lifecycle annotations. Introduced in Spring 2.5, the support for these annotations offers yet another alternative to those described in initialization callbacks and destruction callbacks. Provided that the CommonAnnotationBeanPostProcessor is registered within the Spring ApplicationContext, a method carrying one of these annotations is invoked at the same point in the lifecycle as the corresponding Spring lifecycle interface method or explicitly declared callback method. In the example below, the cache will be pre-populated upon initialization and cleared upon destruction.
+
+```java
+public class CachingMovieLister {
+
+    @PostConstruct
+    public void populateMovieCache() {
+        // populates the movie cache upon initialization...
+    }
+
+    @PreDestroy
+    public void clearMovieCache() {
+        // clears the movie cache upon destruction...
+    }
+
+}
+```
+```java
+[Note]
+For details about the effects of combining various lifecycle mechanisms, see the section called “Combining lifecycle mechanisms”.
+```
+
+#### 6.10 Classpath scanning and managed components
