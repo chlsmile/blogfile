@@ -3933,3 +3933,41 @@ public class AppConfig  {
 When working with standard annotations, it is important to know that some significant features are not available as shown in the table below:
 
 Table 6.6. Spring component model elements vs. JSR-330 variants
+
+Spring | javax.inject.* | javax.inject restrictions / comments
+------------ | ------------- | ------------
+@Autowired | @Inject  | @Inject has no 'required' attribute; can be used with Java 8’s Optional instead.
+@Component | @Named  | JSR-330 does not provide a composable model, just a way to identify named components.
+@Scope("singleton") | @Singleton  | The JSR-330 default scope is like Spring’s prototype. However, in order to keep it consistent with Spring’s general defaults, a JSR-330 bean declared in the Spring container is a singleton by default. In order to use a scope other than singleton, you should use Spring’s @Scope annotation. javax.inject also provides a @Scope annotation. Nevertheless, this one is only intended to be used for creating your own annotations.
+@Qualifier | @Qualifier / @Named  | javax.inject.Qualifier is just a meta-annotation for building custom qualifiers. Concrete String qualifiers (like Spring’s @Qualifier with a value) can be associated through javax.inject.Named.
+@Value| -  | no equivalent
+@Required | - | no equivalent
+@Lazy | -  | no equivalent
+ObjectFactory | Provider  |
+javax.inject.Provider is a direct alternative to Spring’s ObjectFactory, just with a shorter get() method name. It can also be used in combination with Spring’s @Autowired or with non-annotated constructors and setter methods.
+
+#### 6.12 Java-based container configuration
+
+6.12.1 Basic concepts: @Bean and @Configuration
+The central artifacts in Spring’s new Java-configuration support are @Configuration-annotated classes and @Bean-annotated methods.
+
+The @Bean annotation is used to indicate that a method instantiates, configures and initializes a new object to be managed by the Spring IoC container. For those familiar with Spring’s <beans/> XML configuration the @Bean annotation plays the same role as the <bean/> element. You can use @Bean annotated methods with any Spring @Component, however, they are most often used with @Configuration beans.
+
+Annotating a class with @Configuration indicates that its primary purpose is as a source of bean definitions. Furthermore, @Configuration classes allow inter-bean dependencies to be defined by simply calling other @Bean methods in the same class. The simplest possible @Configuration class would read as follows:
+```java
+@Configuration
+public class AppConfig {
+
+    @Bean
+    public MyService myService() {
+        return new MyServiceImpl();
+    }
+
+}
+```
+The AppConfig class above would be equivalent to the following Spring <beans/> XML:
+
+
+
+
+
