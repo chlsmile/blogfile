@@ -1,6 +1,6 @@
 ## sql的语法顺序与执行顺序
 
-### sql语法顺序如下:
+#### sql语法顺序如下:
 - SELECT[DISTINCT]
 - FROM
 - WHERE
@@ -9,7 +9,7 @@
 - UNION
 - ORDER BY
 
-### sql执行顺序如下:
+#### sql执行顺序如下:
 - FROM
 - WHERE
 - GROUP BY
