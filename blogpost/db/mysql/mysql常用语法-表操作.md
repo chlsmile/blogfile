@@ -21,9 +21,11 @@ drop table t_student;
 
 - 修改表-增加字段
 ```mysql
+alter table t_student add column school varchar(100) default NULL comment '学校';
 ```
 - 修改表-删除字段
 ```mysql
+alter table t_student drop column school;
 ```
 - 修改表-增加索引
 ```mysql
