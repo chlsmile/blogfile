@@ -780,7 +780,7 @@ Coverage of Spring’s integration with AspectJ (currently the richest - in term
 #### 6.1 介绍Spring IoC容器和beans
 
 本章节覆盖了Spring框架的控制反转(IoC)实现原理。IoC也被称作依赖注入(DI)。
-It is a process whereby objects define their dependencies, that is, the other objects they work with, only through constructor arguments, arguments to a factory method, or properties that are set on the object instance after it is constructed or returned from a factory method.
+It is a process whereby objects define their dependencies,that is, the other objects they work with,only through constructor arguments,arguments to a factory method,or properties that are set on the object instance after it is constructed or returned from a factory method.
 当创建bean的时候容器注入bean的那些依赖。这个过程从根本上进行了反转,于是有了控制反转这个名字(IoC),of the bean itself controlling the instantiation or location of its dependencies by using direct construction of classes, or a mechanism such as the Service Locator pattern.
 
 org.springframework.beans包和org.springframework.context包是Spring框架的基本Io容器。BeanFactory接口提供了能管理任何类型对象的高级配置机制。ApplicationContext是BeanFactory的一个子接口。它增加了更容易集成Spring AOP功能;消息资源管理(用于国际化),事件发布;和应用层特殊的上下文,例如在web应用中使用的WebApplicationContext。
@@ -1832,12 +1832,19 @@ You can use compound or nested property names when you set bean properties, as l
 ```
 The foo bean has a fred property, which has a bob property, which has a sammy property, and that final sammy property is being set to the value 123. In order for this to work, the fred property of foo, and the bob property of fred must not be null after the bean is constructed, or a NullPointerException is thrown.
 
-#### 6.4.3 Using depends-on
-If a bean is a dependency of another that usually means that one bean is set as a property of another. Typically you accomplish this with the <ref/> element in XML-based configuration metadata. However, sometimes dependencies between beans are less direct; for example, a static initializer in a class needs to be triggered, such as database driver registration. The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized. The following example uses the depends-on attribute to express a dependency on a single bean:
+#### 6.4.3 使用depends-on
+If a bean is a dependency of another that usually means that one bean is set as a property of another.
+Typically you accomplish this with the <ref/> element in XML-based configuration metadata.
+However, sometimes dependencies between beans are less direct; for example, a static initializer in a class needs to be triggered, such as database driver registration.
+The depends-on attribute can explicitly force one or more beans to be initialized before the bean using this element is initialized.
+The following example uses the depends-on attribute to express a dependency on a single bean:
 ```java
 <bean id="beanOne" class="ExampleBean" depends-on="manager"/>
 <bean id="manager" class="ManagerBean" />
 ```
+如果
+
+
 To express a dependency on multiple beans, supply a list of bean names as the value of the depends-on attribute, with commas, whitespace and semicolons, used as valid delimiters:
 ```java
 <bean id="beanOne" class="ExampleBean" depends-on="manager,accountDao">
