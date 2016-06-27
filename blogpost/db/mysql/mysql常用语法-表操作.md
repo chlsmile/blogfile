@@ -29,8 +29,10 @@ alter table t_student drop column school;
 ```
 - 修改表-增加索引
 ```mysql
+
 ```
 
 - 修改表-删除索引
 ```mysql
+
 ```
