@@ -33,9 +33,7 @@ try block
 ```
 
 #### 面试题一运行结果分析
-```java
-由于System.exit(0)方法退出了虚拟机，所以finally中的代码块将不会执行
-```
+> 由于System.exit(0)方法退出了虚拟机，所以finally中的代码块将不会执行
 
 
 ### 面试题二
