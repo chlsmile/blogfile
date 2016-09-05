@@ -72,6 +72,6 @@ result is:0
 
 #### 面试题一运行结果分析
 ```java
-由于finally一定会执行,所以虽然在try中return了,但finally中的内容也会执行.finally中的内容只需虚拟机不退出就一定会执行,并且在return之前执行.
+由于finally一定会执行,所以尽管在try中return了,但finally中的内容也会执行.finally中的内容只需虚拟机不退出就一定会执行,并且在return之前执行.
 ```
 
