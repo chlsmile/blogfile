@@ -1,6 +1,6 @@
 ## java中关于异常的典型面试题
 
-### 面试题一
+#### 面试题一
 
 ```java
 
@@ -8,7 +8,6 @@ public class Test {
 
     public int testException(){
         try{
-
             System.out.println("try block");
             System.exit(0);
         }catch (Exception e) {
@@ -21,12 +20,22 @@ public class Test {
 
     public static void main(String[] args) {
         Test t=new Test();
-        System.out.println(t.testException());
+        System.out.println("result is:"+t.testException());
     }
+
 }
 
 ```
 
+#### 面试题一运行结果
+```java
+try block
+```
+
+#### 面试题一运行结果分析
+```java
+由于System.exit(0)方法退出了虚拟机，所以finally中的代码块将不会执行
+```
 
 
 ### 面试题二
@@ -44,15 +53,25 @@ public class Test {
             System.out.println("finally block");
         }
         return 1;
-
     }
 
     public static void main(String[] args) {
         Test t = new Test();
-        System.out.println(t.testException());
+        System.out.println("result is:"+t.testException());
 
     }
-
 }
 
 ```
+
+#### 面试题一运行结果
+```java
+finally block
+result is:0
+```
+
+#### 面试题一运行结果分析
+```java
+由于finally一定会执行,所以虽然在try中return了,但finally中的内容也会执行.finally中的内容只需虚拟机不退出就一定会执行,并且在return之前执行.
+```
+
