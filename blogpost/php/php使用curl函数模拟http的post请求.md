@@ -1,7 +1,6 @@
 ## php使用curl函数模拟http的post请求
 
 ```php
-
 <?php
 
 $data='mobile=18612244109&timestamp=1471414353000';
@@ -14,11 +13,9 @@ curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
 $server_output = curl_exec ($ch);
-
 curl_close ($ch);
 
 echo "result is:".$server_output;
 
 ?>
-
 ```
