@@ -71,10 +71,11 @@ result is:0
 ```
 
 
-
 #### 面试题二运行结果分析
 ```java
-由于finally块中的语句一定会执行,所有虽然在在在在try块中进行了return,但finally中的语句还是会执行.finally中的内容虚拟机不退出就一定会执行,并且在return之前执行.
+
+由于finally代码块中的语句一定会执行,所有虽然try代码块中进行了return,但finally中的语句还是会执行.finally中的内容虚拟机不退出就一定会执行,并且在return之前执行.
+
 ```
 
 
