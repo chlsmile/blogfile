@@ -1,4 +1,4 @@
-### jsp与servlet之间的关系
+## jsp与servlet之间的关系
 
 ### jsp的本质
 - jsp在首次被访问的时候被应用服务器转换为servlet，在以后的运行中，容器直接调用这个servlet，而不再访问jsp页面。jsp的实质仍然是servlet。
