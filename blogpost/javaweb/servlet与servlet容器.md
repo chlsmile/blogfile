@@ -8,8 +8,8 @@
 
 
 #### 什么是servlet容器
-- Servlet容器是web server 或application server的一部分，提供基于请求/响应发送模型的网络服务，解码基于MIME的请求，并且格式化基于MIME的响应。Servlet 容器也包含了管理Servlet 生命周期。
+- Servlet容器是web server 或application server的一部分，提供基于请求/响应发送模型的网络服务，解码基于MIME的请求，并且格式化基于MIME的响应。Servlet 容器也包含了管理Servlet生命周期。
 
-- 所有Servlet容器必须支持基于HTTP 协议的请求/响应模型，比如像基于HTTPS（HTTP over SSL）协议的请求/应答模型可以选择性的支持。容器必须实现的HTTP 协议版本包含HTTP/1.0 和HTTP/1.1。
+- 所有Servlet容器必须支持基于HTTP协议的请求/响应模型，比如像基于HTTPS（HTTP over SSL）协议的请求/应答模型可以选择性的支持。容器必须实现的HTTP协议版本包含HTTP/1.0和HTTP/1.1。
 
 
