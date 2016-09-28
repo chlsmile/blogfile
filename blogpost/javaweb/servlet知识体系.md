@@ -2,7 +2,7 @@
 
 - [什么是servlet与servlet容器,servlet与servlet容器之间的关系](https://github.com/chlsmile/blogfile/blob/master/blogpost/javaweb/servlet与servlet容器.md)
 
-- [servlet的创建与加载顺序]()
+- [servlet的初始化与加载顺序](https://github.com/chlsmile/blogfile/blob/master/blogpost/javaweb/servlet的初始化与加载顺序.md)
 
 - [servlet的生命周期](https://github.com/chlsmile/blogfile/blob/master/blogpost/javaweb/servlet生命周期.md)
 
