@@ -1,5 +1,9 @@
 ## get请求与post请求对比
 
+
+
+- 在http协议中post请求提交的数据大小理论上是没有限制的
+
 参考http协议文档https://www.w3.org/Protocols/rfc2616/rfc2616-sec15.html#sec15.1.3
 
 9.3 GET

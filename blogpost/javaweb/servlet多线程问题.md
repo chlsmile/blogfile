@@ -1,0 +1,7 @@
+## servlet多线程问题
+
+### servlet默认是线程不安全的
+
+- Servlet 容器可以并发的发送多个请求到Servlet 的service 方法。为了处理这些请求，Servlet 开发者必须为service方法的多线程并发处理做好充足的准备。一个替代的方案是开发人员实现SingleThreadModel接口，由容器保证一个service方法在同一个时间点仅被一个请求线程调用，但是此方案是不推荐的。Servlet容器可以通过串行化访问Servlet 的请求，或者维护一个Servlet 实例池完成该需求。如果Web 应用中的Servlet被标注为分布式的，容器应该为每一个分布式应用程序的JVM维护一个Servlet实例池。
+
+- 对于那些没有实现SingleThreadModel 接口的Servlet，但是它的service方法（或者是那些HttpServlet 中通过service 方法分派的doGet、doPost 等分派方法）是通过synchronized 关键词定义的，Servlet 容器不能使用实例池方案，并且只能使用序列化请求进行处理。强烈推荐开发人员不要去通过service方法（或者那些由Service 分派的方法），因为这将严重影响性能。
