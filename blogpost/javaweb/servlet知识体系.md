@@ -6,9 +6,9 @@
 
 - [servlet的生命周期]()
 
-- [HttpServlet与GenericServlet与Servlet关系层次结构图]()
+- [HttpServlet与GenericServlet与Servlet关系层次结构]()
 
-- [servlet多线程问题]()
+- [servlet多线程问题](https://github.com/chlsmile/blogfile/blob/master/blogpost/javaweb/servlet多线程问题.md)
 
 - [转发与重定向]()
 
