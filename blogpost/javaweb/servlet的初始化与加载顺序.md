@@ -7,7 +7,7 @@
 - 在web.xml中不配置load-on-startup,则容器启动时LifeDemoServlet的init方法不会执行;
 - 在web.xml中配置load-on-startup的值小于0,则容器启动的时候LifeDemoServlet的init方法不会执行;
 - 在web.xml中配置load-on-startup的值为大于等于0的值,则容器启动时LifeDemoServlet的init方法执行.
-- 示例代码
+示例代码LifeDemoServlet类与web.xml文件如下:
 ```java
 package com.chlsmile.demo.web;
 import javax.servlet.ServletConfig;
