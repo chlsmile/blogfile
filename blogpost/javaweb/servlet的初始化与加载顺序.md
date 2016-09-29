@@ -38,7 +38,6 @@ public class LifeDemoServlet extends HttpServlet {
 
 }
 ```
-
 ```java
 <!DOCTYPE web-app PUBLIC
         "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
@@ -56,7 +55,6 @@ public class LifeDemoServlet extends HttpServlet {
         <url-pattern>/LifeDemoServlet</url-pattern>
     </servlet-mapping>
 </web-app>
-
 ```
 
 
