@@ -62,8 +62,9 @@ public class LifeDemoServlet extends HttpServlet {
 ```
 
 ### 二、Servlet的初始化顺序
-- 在web.xml中定义了多个Servlet时,可以通过配置web.xml中的load-on-startup来指定初始化顺序,load-on-startup的数值越高Servlet容器会越优先加载相应的servlet.
-- 如果多个Servlet的load-on-startup值相同,则???????
+- 在web.xml中定义了多个Servlet时,可以通过配置web.xml中的load-on-startup来指定初始化顺序(load-on-startup的值大于等于0),load-on-startup的数值越小则对应的Servlet越优先初始化.
+- 如果多个Servlet的load-on-startup值相同,则这些Servlet的初始化顺序是由Servlet容器自己决定的,不会哪个Servlet在web.xml中的位置靠前就优先初始化.
+
 
 
 
