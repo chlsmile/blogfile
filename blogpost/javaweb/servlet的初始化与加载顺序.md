@@ -1,19 +1,19 @@
 ## Servlet的初始化与加载顺序
 
 
-### Servlet的初始化
-> servlet可以通过两种方式进行初始化,容器启动的时候初始化(可以通过在web.xml中配置load-on-startup的值大于等于零来让容器启动的时候创建相应的servlet),第一次被请求时候进行初始化。
+### 一、Servlet的初始化
+> Servlet可以通过两种方式进行初始化,容器启动的时候初始化(可以通过在web.xml中配置load-on-startup的值大于等于零来让容器启动的时候创建相应的Servlet),第一次被请求时候进行初始化。
 
-#### 容器启动时初始化
+#### 1.1容器启动时初始化
 - 在web.xml中不配置load-on-startup,则容器启动时LifeDemoServlet的init方法不会执行;
 - 在web.xml中配置load-on-startup的值小于0,则容器启动的时候LifeDemoServlet的init方法不会执行;
 - 在web.xml中配置load-on-startup的值为大于等于0的值,则容器启动时LifeDemoServlet的init方法执行.
 
-#### 第一次使用时初始化
+#### 1.2第一次使用时初始化
 - 在web.xml中不配置load-on-startup,则在第一次请求LifeDemoServlet的时候LifeDemoServlet会进行初始化调用init方法
 
 
-### Servlet的加载顺序
+### 二、Servlet的加载顺序
 
 
 
