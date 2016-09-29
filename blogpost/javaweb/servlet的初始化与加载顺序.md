@@ -9,8 +9,6 @@
 - 在web.xml中配置load-on-startup的值为大于等于0的值,则容器启动时LifeDemoServlet的init方法执行.
 - 示例代码
 ```java
-LifeDemoServlet类
-
 package com.chlsmile.demo.web;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -39,8 +37,9 @@ public class LifeDemoServlet extends HttpServlet {
     }
 
 }
+```
 
-web.xml文件
+```java
 <!DOCTYPE web-app PUBLIC
         "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd" >
