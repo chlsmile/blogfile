@@ -2,16 +2,15 @@
 > servlet可以通过两种方式进行初始化,容器启动的时候初始化,第一次被请求时候进行初始化。
 
 ### 容器启动时初始化
-可以通过在web.xml中配置load-on-startup的值大于等于零来让容器启动的时候创建相应的servlet
+#### 可以通过在web.xml中配置load-on-startup的值大于等于零来让容器启动的时候创建相应的servlet
 - 不添加load-on-startup,则容器启动时LifeDemoServlet的init方法不会执行
 - load-on-startup的值小于0,则容器启动的时候LifeDemoServlet的init方法不会执行
 - load-on-startup的值为大于等于0的值,则容器启动时LifeDemoServlet的init方法执行
 
-示例代码
+#### 示例代码
 LifeDemoServlet类
 ```java
 package com.chlsmile.demo.web;
-
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,12 +33,9 @@ public class LifeDemoServlet extends HttpServlet {
         System.out.println("LifeDemoServlet destroy 方法执行了");
     }
 
-
-
     public void service(HttpServletRequest req, HttpServletResponse resp){
         System.out.println("LifeDemoServlet service 方法执行了");
     }
-
 
 }
 ```
