@@ -11,7 +11,7 @@
 #### 1.2第一次使用时初始化
 - 在web.xml中不配置load-on-startup,则在第一次请求LifeDemoServlet的时候LifeDemoServlet会进行初始化调用init方法.
 
-示例代码LifeDemoServlet类与web.xml文件如下:
+#### 示例代码LifeDemoServlet类与web.xml文件如下:
 ```java
 package com.chlsmile.demo.web;
 import javax.servlet.ServletConfig;
