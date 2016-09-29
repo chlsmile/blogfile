@@ -1,7 +1,72 @@
-## servlet的初始化
+## servlet的初始化与加载顺序
+> servlet可以通过两种方式进行初始化容器启动的时候初始化,第一次被请求时候进行初始化
 
-### servlet初始化的两种方式
 #### 容器启动时初始化
+可以通过在web.xml中配置load-on-startup的值大于等于零来让容器启动的时候创建相应的servlet
+- 不添加load-on-startup,则容器启动时LifeDemoServlet的init方法不会执行
+- load-on-startup的值小于0,则容器启动的时候LifeDemoServlet的init方法不会执行
+- load-on-startup的值为大于等于0的值,则容器启动时LifeDemoServlet的init方法执行
+- 示例代码
+LifeDemoServlet类
+```java
+package com.chlsmile.demo.web;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Created with: IntelliJ IDEA.
+ * Function:
+ * User: chl_smile
+ * Date: 2016-09-22 18:37:00
+ */
+public class LifeDemoServlet extends HttpServlet {
+
+    public void init(ServletConfig config) throws ServletException{
+        System.out.println("LifeDemoServlet init 方法执行了");
+    }
+
+    public void destroy(){
+        System.out.println("LifeDemoServlet destroy 方法执行了");
+    }
+
+
+
+    public void service(HttpServletRequest req, HttpServletResponse resp){
+        System.out.println("LifeDemoServlet service 方法执行了");
+    }
+
+
+}
+```
+web.xml文件
+```java
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+
+<web-app>
+    <display-name>servlet demo web</display-name>
+    <servlet>
+        <servlet-name>LifeDemoServlet</servlet-name>
+        <servlet-class>com.chlsmile.demo.web.LifeDemoServlet</servlet-class>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LifeDemoServlet</servlet-name>
+        <url-pattern>/LifeDemoServlet</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+
+
+
+
+
 
 #### 第一次使用时初始化
 <load-on-startup>1</load-on-startup>-->

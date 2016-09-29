@@ -4,7 +4,7 @@
 /**
  * Created with: ${PRODUCT_NAME}.
  * Function:
- * User: chl_smile
+ * User: ${User}
  * Date: ${YEAR}-${MONTH}-${DAY} ${HOUR}:${MINUTE}:00
  */
  ```
