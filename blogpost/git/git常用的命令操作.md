@@ -22,3 +22,9 @@
 - git log -p -2
 - git log --stat
 - git log --pretty=oneline
+
+- git commit --amend
+
+- git reset HEAD CONTRIBUTING.md
+
+- git branch testing
