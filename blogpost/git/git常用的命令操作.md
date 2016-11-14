@@ -31,3 +31,7 @@
 - git checkout -b iss53
 
 - git ls-remote
+
+
+#### git log
+- git log --pretty=oneline
