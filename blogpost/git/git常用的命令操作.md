@@ -31,3 +31,9 @@
 
 #### git log
 - git log --pretty=oneline
+
+#### git reset
+- git reset --hard commit_id 回退到指定的版本
+- git reset --hard HEAD^
+- git reset --hard HEAD^^
+- git reset --hard HEAD~100
