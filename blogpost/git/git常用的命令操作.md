@@ -28,3 +28,6 @@
 - git reset HEAD CONTRIBUTING.md
 
 - git branch testing
+
+#### git log
+- git log --pretty=oneline
