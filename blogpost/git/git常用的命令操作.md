@@ -28,3 +28,6 @@
 - git reset HEAD CONTRIBUTING.md
 
 - git branch testing
+- git checkout -b iss53
+
+- git ls-remote
