@@ -37,3 +37,17 @@
 - git reset --hard HEAD^
 - git reset --hard HEAD^^
 - git reset --hard HEAD~100
+
+
+git remote add origin git@server-name:path/repo-name.git
+git push -u origin master
+
+#### git分之合并
+git merge --no-ff -m "merge with no-ff" dev
+
+git stash
+git stash list
+git stash apply
+git stash drop
+git stash pop
+git stash apply stash@{0}

@@ -7,6 +7,11 @@
 
 
 ###待看文章
+http://www.blogjava.net/jiangshachina/archive/2012/02/13/369898.html
+http://www.infoq.com/cn/articles/serialization-and-deserialization
+http://www.cnblogs.com/xdp-gacl/p/3777987.html
+http://blog.csdn.net/p106786860/article/details/17953223
+https://www.ibm.com/developerworks/cn/java/j-lo-serial/
 https://docs.oracle.com/javase/7/docs/api/java/io/Serializable.html
 http://www.cnblogs.com/chenfei0801/archive/2013/04/05/3001149.html
 https://www.ibm.com/developerworks/library/j-5things1/
