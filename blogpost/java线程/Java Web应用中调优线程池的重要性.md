@@ -83,17 +83,17 @@ try {
 
 这里，accept()方法仍然在主线程中调用，但是一旦TCP连接建立之后，将会创建一个新的线程来处理新的请求，既在新的线程中执行前文中的handleRequest方法。
 
-通过创建新的线程，主线程可以继续接受新的TCP连接，且这些信求可以并行的处理。这个方式称为“每个请求一个线程（thread per request）”。当然，还有其他方式来提高处理性能，例如NGINX和Node.js使用的异步事件驱动模型，但是它们不使用线程池，因此不在本文的讨论范围。
+通过创建新的线程，主线程可以继续接受新的TCP连接，且这些信求可以并行的处理。这个方式称为“每个请求一个线程（thread per request）”。当然，还有其他方式来提高处理性能，例如[NGINX](https://www.nginx.com/)和[Node.js](https://nodejs.org)使用的异步事件驱动模型，但是它们不使用线程池，因此不在本文的讨论范围。
 
 在每个请求一个线程实现中，创建一个线程（和后续的销毁）开销是非常昂贵的，因为JVM和操作系统都需要分配资源。另外，上面的实现还有一个问题，即创建的线程数是不可控的，这将可能导致系统资源被迅速耗尽。
 
 ### 资源耗尽
 
-每个线程都需要一定的栈内存空间。在最近的64位JVM中，默认的栈大小是1024KB。如果服务器收到大量请求，或者handleRequest方法执行很慢，服务器可能因为创建了大量线程而崩溃。例如有1000个并行的请求，创建出来的1000个线程需要使用1GB的JVM内存作为线程栈空间。另外，每个线程代码执行过程中创建的对象，还可能会在堆上创建对象。这样的情况恶化下去，将会超出JVM堆内存，并产生大量的垃圾回收操作，最终引发内存溢出（OutOfMemoryErrors）。
+每个线程都需要一定的栈内存空间。在最近的64位JVM中，[默认的栈大小](https://docs.oracle.com/javase/8/docs/technotes/tools/unix/java.html)是1024KB。如果服务器收到大量请求，或者handleRequest方法执行很慢，服务器可能因为创建了大量线程而崩溃。例如有1000个并行的请求，创建出来的1000个线程需要使用1GB的JVM内存作为线程栈空间。另外，每个线程代码执行过程中创建的对象，还可能会在堆上创建对象。这样的情况恶化下去，将会超出JVM堆内存，并产生大量的垃圾回收操作，最终引发[内存溢出（OutOfMemoryErrors）](https://docs.oracle.com/javase/7/docs/api/java/lang/OutOfMemoryError.html)。
 
 这些线程不仅仅会消耗内存，它们还会使用其他有限的资源，例如文件句柄、数据库连接等。不可控的创建线程，还可能引发其他类型的错误和崩溃。因此，避免资源耗尽的一个重要方式，就是避免不可控的数据结构。
 
-顺便说下，由于线程栈大小引发的内存问题，可以通过-Xss开关来调整栈大小。缩小线程栈大小之后，可以减少每个线程的开销，但是可能会引发栈溢出（StackOverflowErrors）。对于一般应用程序而言，默认的1024KB过于富裕，调小为256KB或者512KB可能更为合适。Java允许的最小值是160KB。
+顺便说下，由于线程栈大小引发的内存问题，可以通过-Xss开关来调整栈大小。缩小线程栈大小之后，可以减少每个线程的开销，[但是可能会引发栈溢出（StackOverflowErrors）](https://docs.oracle.com/javase/7/docs/api/java/lang/StackOverflowError.html)。对于一般应用程序而言，默认的1024KB过于富裕，调小为256KB或者512KB可能更为合适。Java允许的最小值是160KB。
 
 ### 线程池
 
@@ -114,7 +114,7 @@ try {
 
 在这个示例中，没有直接创建线程，而是使用了ExecutorService。它将需要执行的任务（需要实现Runnables接口）提交到线程池，使用线程池中的线程执行代码。示例中，使用线程数量为4的固定大小线程池来处理所有请求。这限制了处理请求的线程数量，也限制了资源的使用。
 
-除了通过newFixedThreadPool方法创建固定大小线程池，Executors类还提供了newCachedThreadPool方法。复用线程池还是有可能导致不可控的线程数，但是它会尽可能使用之前已经创建的空闲线程。通常该类型线程池适合使用在不会被外部资源阻塞的短任务上。
+[除了通过newFixedThreadPool](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executors.html#newFixedThreadPool%28int%29)方法创建固定大小线程池，Executors类还提供了[newCachedThreadPool](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/Executors.html#newCachedThreadPool%28%29)方法。复用线程池还是有可能导致不可控的线程数，但是它会尽可能使用之前已经创建的空闲线程。通常该类型线程池适合使用在不会被外部资源阻塞的短任务上。
 
 ### 工作队列
 
@@ -144,9 +144,9 @@ public static void boundedThreadPoolServerSocket() throws IOException {
 
 这里我们没有直接使用Executors.newFixedThreadPool方法来创建线程池，而是自己构建了ThreadPoolExecutor对象，并将工作队列长度限制为16个元素。
 
-如果所有的线程都繁忙，新的任务将会填充到队列中，由于队列限制了大小为16个元素，如果超过这个限制，就需要由构造ThreadPoolExecutor对象时的最后一个参数来处理了。示例中，使用了抛弃策略（DiscardPolicy），即当队列到达上限时，将抛弃新来的任务。初次之外，还有中止策略（AbortPolicy）和调用者执行策略（CallerRunsPolicy）。前者将抛出一个异常，而后者会再调用者线程中执行任务。
+如果所有的线程都繁忙，新的任务将会填充到队列中，由于队列限制了大小为16个元素，如果超过这个限制，就需要由构造ThreadPoolExecutor对象时的最后一个参数来处理了。示例中，使用了[抛弃策略（DiscardPolicy）](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.DiscardPolicy.html)，即当队列到达上限时，将抛弃新来的任务。初次之外，还有[中止策略（AbortPolicy）](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.AbortPolicy.html)[和调用者执行策略（CallerRunsPolicy）](https://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ThreadPoolExecutor.CallerRunsPolicy.html)。前者将抛出一个异常，而后者会再调用者线程中执行任务。
 
-对于Web应用来说，最优的默认策略应该是抛弃或者中止策略，并返回一个错误给客户端（如HTTP 503错误）。当然也可以通过增加工作队列长度的方式，避免抛弃客户端请求，但是用户请求一般不愿意进行长时间的等待，且这样会更多的消耗服务器资源。工作队列的用途，不是无限制的响应客户端请求，而是平滑突发暴增的请求。通常情况下，工作队列应该是空的。
+对于Web应用来说，最优的默认策略应该是抛弃或者中止策略，并返回一个错误给客户端（如[HTTP 503错误](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.5.4)）。当然也可以通过增加工作队列长度的方式，避免抛弃客户端请求，但是用户请求一般不愿意进行长时间的等待，且这样会更多的消耗服务器资源。工作队列的用途，不是无限制的响应客户端请求，而是平滑突发暴增的请求。通常情况下，工作队列应该是空的。
 
 ### 线程数调优
 
@@ -156,8 +156,10 @@ public static void boundedThreadPoolServerSocket() throws IOException {
 
 ### 利特尔法则
 
-利特尔法则描述了在稳定系统中，三个变量之间的关系。
+[利特尔法则](https://en.wikipedia.org/wiki/Little%27s_law)描述了在稳定系统中，三个变量之间的关系。
+
 ![pic](https://github.com/chlsmile/blogfile/blob/master/blogfile/利特尔法则.jpg)
+
 其中L表示平均请求数量，λ表示请求的频率，W表示响应请求的平均时间。举例来说，如果每秒请求数为10次，每个请求处理时间为1秒，那么在任何时刻都有10个请求正在被处理。回到我们的话题，就是需要使用10个线程来进行处理。如果单个请求的处理时间翻倍，那么处理的线程数也要翻倍，变成20个。
 
 理解了处理时间对于请求处理效率的影响之后，我们会发现，通常理论上限可能不是线程池大小的最佳值。线程池上限还需要参考任务处理时间。
@@ -174,4 +176,8 @@ public static void boundedThreadPoolServerSocket() throws IOException {
 
 ### 总结
 
-即使没有在应用程序中直接使用线程池，它们也很有可能在应用程序中被应用服务器或者框架间接使用。Tomcat、JBoss、Undertow、Dropwizard等框架，都提供了调优线程池（servlet执行使用的线程池）的选项。
+即使没有在应用程序中直接使用线程池，它们也很有可能在应用程序中被应用服务器或者框架间接使用。[Tomcat](https://tomcat.apache.org/tomcat-8.0-doc/config/http.html)、[JBoss](https://developer.jboss.org/wiki/ThreadPoolConfiguration)、[Undertow](http://undertow.io/undertow-docs/undertow-docs-1.2.0/listeners.html)、[Dropwizard](http://www.dropwizard.io/0.7.1/docs/manual/configuration.html)等框架，都提供了调优线程池（servlet执行使用的线程池）的选项。
+
+### 原文链接
+- [中文原文](http://www.infoq.com/cn/articles/the-importance-of-thread-pool-in-java-web-application)
+- [英文原文](https://blog.bramp.net/post/2015/12/17/the-importance-of-tuning-your-thread-pools)
